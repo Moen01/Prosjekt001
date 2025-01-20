@@ -1,0 +1,71 @@
+/* CSS */
+.container {
+  display: flex;
+  height: 100vh; /* Full viewport height */
+}
+
+.leftPane {
+  flex: 1; /* 1 part out of 4 */
+  background-color: #f0f0f0; /* Optional: for visual distinction */
+  padding: 20px;
+}
+
+.rightPane {
+  flex: 3; /* 3 parts out of 4 */
+  background-color: #ffffff; /* Optional: for visual distinction */
+  padding: 20px;
+}
+
+.separator {
+  width: 2px;
+  background-color: #000; /* Color of the separator line */
+  height: 100%; /* Full height of the container */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  background-color: #e0e0e0; /* Gray-toned background */
+  padding: 10px;
+}
+
+.button {
+  text-align: center;
+}
+
+.button button {
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button button:hover {
+  background-color: #005bb5;
+}
+
+.button p {
+  margin-top: 5px;
+}
+
+/* Unique button styles */
+.button1 {}
+.button2 {}
+.button3 {}
+.button4 {}
+.button5 {}
+.button6 {}
+.button7 {}
+
+.button1 button:hover {
+  background-color: #ff5733; /* Different background color on hover */
+  transform: scale(1.1); /* Slightly enlarge the button */
+}
+
+.button2 button:hover {
+  background-color: #33ff57; /* Different background color on hover */
+  transform: rotate(10deg); /* Slightly rotate the button */
+}
