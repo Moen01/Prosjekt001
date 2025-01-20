@@ -1,5 +1,6 @@
 
 import styles from './page.module.css';
+import Header from './components/Header';
 
 export default function func() {
   return (
@@ -11,14 +12,7 @@ export default function func() {
       <div className={styles.separator}></div>
 
       <div className={styles.rightPane}>
-        <header className={styles.header}>
-          {Array.from({ length: 7 }, (_, i) => (
-            <div key={i} className={`${styles.button} ${styles[`button${i + 1}`]}`}>
-              <button className={styles[`button${i + 1}`]}>Button {i + 1}</button>
-              <p>Button {i + 1}</p>
-            </div>
-          ))}
-        </header>
+        <Header />
         <h2>This is the right pane</h2>
         
       </div>
