@@ -1,8 +1,13 @@
 
-import styles from './page.module.css';
-import Header from './components/Header';
+import React from 'react';
+import styles from './styles/page.module.css';
+import Header from './components/Layout/Header';
+import Delay from './components/Layout/delay';
+import Ffmea from './(pre-prod)/f.fmea/page';
 
-export default function func() {
+
+export default function MainPage() {
+
   return (
     <div className={styles.container}>
       <div className={styles.leftPane}>
@@ -12,9 +17,10 @@ export default function func() {
       <div className={styles.separator}></div>
 
       <div className={styles.rightPane}>
+        
         <Header />
         <h2>This is the right pane</h2>
-        
+        <Ffmea />
       </div>
     </div>
   );

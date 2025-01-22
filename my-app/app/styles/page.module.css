@@ -25,16 +25,19 @@
 .header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
   background-color: #e0e0e0; /* Gray-toned background */
   padding: 10px;
+  border-radius: 10px;
 }
 
-.button {
+.header button {
   text-align: center;
+  padding: 4px;
+  border-radius: 10px;
 }
 
-.button button {
+.header button{ 
   background-color: #0070f3;
   color: white;
   border: none;
@@ -43,29 +46,43 @@
   transition: background-color 0.3s;
 }
 
-.button button:hover {
+.header button:hover {
   background-color: #005bb5;
 }
 
-.button p {
-  margin-top: 5px;
-}
 
-/* Unique button styles */
-.button1 {}
-.button2 {}
-.button3 {}
-.button4 {}
-.button5 {}
-.button6 {}
-.button7 {}
 
-.button1 button:hover {
+.header button1:hover {
   background-color: #ff5733; /* Different background color on hover */
   transform: scale(1.1); /* Slightly enlarge the button */
 }
 
-.button2 button:hover {
+.header button:hover {
   background-color: #33ff57; /* Different background color on hover */
   transform: rotate(10deg); /* Slightly rotate the button */
+}
+
+.header button:hover {
+  background-color: #1ad1b8; /* Different background color on hover */
+  transform: scale(1.2); /* Slightly enlarge the button */
+}
+
+.button4 button:hover {
+  background-color: #ff5733; /* Different background color on hover */
+  transform: scale(1.1); /* Slightly enlarge the button */
+}
+
+.button5 button:hover {
+  background-color: #ff5733; /* Different background color on hover */
+  transform: scale(1.1); /* Slightly enlarge the button */
+}
+
+.button6 button:hover {
+  background-color: #ff5733; /* Different background color on hover */
+  transform: scale(1.1); /* Slightly enlarge the button */
+}
+
+.button7 button:hover {
+  background-color: #ff5733; /* Different background color on hover */
+  transform: scale(1.1); /* Slightly enlarge the button */
 }
