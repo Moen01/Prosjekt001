@@ -3,11 +3,11 @@ import React from 'react';
 import styles from './styles/page.module.css';
 import Header from './components/Layout/Header';
 import Delay from './components/Layout/delay';
-import Ffmea from './(pre-prod)/f.fmea/page';
+import Ffmea from './(pre-prod)/ffmea/page';
 
 
 export default function MainPage() {
-
+  
   return (
     <div className={styles.container}>
       <div className={styles.leftPane}>
@@ -20,7 +20,6 @@ export default function MainPage() {
         
         <Header />
         <h2>This is the right pane</h2>
-        <Ffmea />
       </div>
     </div>
   );

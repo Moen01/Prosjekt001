@@ -25,9 +25,9 @@
 .header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
   background-color: #e0e0e0; /* Gray-toned background */
-  padding: 10px;
+  padding: 20px;
   border-radius: 10px;
 }
 
@@ -35,15 +35,13 @@
   text-align: center;
   padding: 4px;
   border-radius: 10px;
-}
-
-.header button{ 
   background-color: #0070f3;
   color: white;
   border: none;
   padding: 10px 20px;
   cursor: pointer;
   transition: background-color 0.3s;
+  margin: 0 10px;
 }
 
 .header button:hover {
