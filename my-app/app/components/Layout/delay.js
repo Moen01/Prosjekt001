@@ -1,8 +1,9 @@
+'use klient';
 import React from "react";
 
-export default async function Delay() {
+export default function Delay() {
     // Simulate a 2-second delay
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    new Promise((resolve) => setTimeout(resolve, 2000));
   
     return (
       <div>

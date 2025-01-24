@@ -10,6 +10,7 @@ export default function MainPage() {
   
   return (
     <div className={styles.container}>
+      
       <div className={styles.leftPane}>
         <h2>Left Pane</h2>
       </div>
@@ -20,6 +21,7 @@ export default function MainPage() {
         
         <Header />
         <h2>This is the right pane</h2>
+        <Ffmea />
       </div>
     </div>
   );

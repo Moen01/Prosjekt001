@@ -20,12 +20,6 @@ export default function Header({onButtonClick}) {
     <header className={styles.header}>
    
       {isLoading ? ( <Delay /> ) : ( <div>
-         
-            
-
-            
-       
-          
 
           <button className={styles.button1}
           onClick={() => {
