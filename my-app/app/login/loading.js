@@ -4,7 +4,7 @@
 import styles from '../styles/loading.module.css';
 import React from 'react';
 
-export default function loading(){ 
+export default function Loading(){ 
     return( 
            
         <div className={styles.loader}>
