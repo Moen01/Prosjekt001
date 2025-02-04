@@ -5,6 +5,8 @@ import Header from './components/Layout/Header';
 import Delay from './components/Layout/delay';
 import Ffmea from './(pre-prod)/ffmea/page';
 import Square from './components/Layout/Square';
+import PageRight from './pageHoyre';
+import BoksModell from './leftPane/boksModell/page';
 
 
 export default function MainPage() {
@@ -14,16 +16,12 @@ export default function MainPage() {
       
       <div className={styles.leftPane}>
         <h2>Left Pane</h2>
+        <BoksModell />
       </div>
 
       <div className={styles.separator}></div>
 
-      <div className={styles.rightPane}>
-        <Header />
-        <h2>This is the right pane</h2>
-        <Ffmea />
-        <Square />
-      </div>
+      <PageRight />
     </div>
   );
 }
