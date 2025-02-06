@@ -9,7 +9,7 @@ export default function BoksModell() {
     const mountRef = useRef(null);
     const [scene, setScene] = useState(null);
     const [renderer, setRenderer] = useState(null);
-    const [camera, setCamera] = useState(null); // Add camera to state
+    const [camera, setCamera] = useState(null);
     const [controls, setControls] = useState(null);
     const [comments, setComments] = useState([]);
     const [selectedComment, setSelectedComment] = useState(null);
@@ -61,42 +61,44 @@ export default function BoksModell() {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const contents = e.target.result;
-                const loader = new STLLoader();
-                const geometry = loader.parse(contents);
-                const material = new THREE.MeshNormalMaterial();
-                const mesh = new THREE.Mesh(geometry, material);
+                if (file.name.endsWith('.stl')) {
+                    const loader = new STLLoader();
+                    const geometry = loader.parse(contents);
+                    const material = new THREE.MeshNormalMaterial();
+                    const mesh = new THREE.Mesh(geometry, material);
 
-                // Scale down the mesh
-                mesh.scale.set(0.1, 0.1, 0.1);
+                    // Scale down the mesh
+                    mesh.scale.set(0.1, 0.1, 0.1);
 
-                const newScene = new THREE.Scene();
-                const newCamera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-                const newRenderer = new THREE.WebGLRenderer({ antialias: true });
+                    const newScene = new THREE.Scene();
+                    const newCamera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+                    const newRenderer = new THREE.WebGLRenderer({ antialias: true });
 
-                newRenderer.setSize(450, 450); // Adjust size as needed
-                newRenderer.setClearColor(0xffffff); // Set background color to white
-                mountRef.current.appendChild(newRenderer.domElement);
+                    newRenderer.setSize(300, 300); // Adjust size as needed
+                    newRenderer.setClearColor(0xffffff); // Set background color to white
+                    mountRef.current.appendChild(newRenderer.domElement);
 
-                newCamera.position.z = 5;
-                newScene.add(mesh);
+                    newCamera.position.z = 5;
+                    newScene.add(mesh);
 
-                const newControls = new OrbitControls(newCamera, newRenderer.domElement);
-                newControls.enableDamping = true;
-                newControls.dampingFactor = 0.25;
-                newControls.enableZoom = true;
+                    const newControls = new OrbitControls(newCamera, newRenderer.domElement);
+                    newControls.enableDamping = true;
+                    newControls.dampingFactor = 0.25;
+                    newControls.enableZoom = true;
 
-                const animate = () => {
-                    requestAnimationFrame(animate);
-                    newControls.update();
-                    newRenderer.render(newScene, newCamera);
-                };
+                    const animate = () => {
+                        requestAnimationFrame(animate);
+                        newControls.update();
+                        newRenderer.render(newScene, newCamera);
+                    };
 
-                animate();
+                    animate();
 
-                setScene(newScene);
-                setRenderer(newRenderer);
-                setCamera(newCamera); // Set camera in state
-                setControls(newControls);
+                    setScene(newScene);
+                    setRenderer(newRenderer);
+                    setCamera(newCamera);
+                    setControls(newControls);
+                }
             };
             reader.readAsArrayBuffer(file);
         }
@@ -110,7 +112,7 @@ export default function BoksModell() {
             renderer.dispose();
             setScene(null);
             setRenderer(null);
-            setCamera(null); // Reset camera in state
+            setCamera(null);
             setControls(null);
             mountRef.current.innerHTML = ''; // Clear the renderer DOM element
         }
