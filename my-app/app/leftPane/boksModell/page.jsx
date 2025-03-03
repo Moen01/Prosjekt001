@@ -20,7 +20,7 @@ export default function BoksModell() {
     useEffect(() => {
         const handleMouseClick = (event) => {
             if (!scene || !renderer || !camera || !isRaycasterActive) return;
-
+            
             const rect = renderer.domElement.getBoundingClientRect();
             const mouse = new THREE.Vector2(
                 ((event.clientX - rect.left) / rect.width) * 2 - 1,

@@ -1,27 +1,43 @@
 
-import React from 'react';
-import styles from './styles/page.module.css';
-import Header from './components/Layout/Header';
-import Delay from './components/Layout/delay';
-import Ffmea from './(pre-prod)/ffmea/page';
-import Square from './components/Layout/Square';
-import PageRight from './pageHoyre';
-import BoksModell from './leftPane/boksModell/page';
+
+'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import styles from './styles/login.module.css';
 
 
-export default function MainPage() {
-  
+export default function Login() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setIsLoading(true);
+    
+    router.push('/ProjectManagment');
+  };
+ 
+
+
   return (
     <div className={styles.container}>
-      
-      <div className={styles.leftPane}>
-        <h2>Left Pane</h2>
-        <BoksModell />
-      </div>
-
-      <div className={styles.separator}></div>
-
-      <PageRight />
-    </div>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          autoComplete="off"
+          name="username"
+          className={styles.input}
+          placeholder="Username"
+        />
+        <input
+          type="password"
+          autoComplete="off"
+          name="password"
+          className={styles.input}
+          placeholder="Password"
+        />
+        <button type="submit" className={styles.button}>Login</button>
+        </form>
+        </div>
   );
 }

@@ -1,0 +1,19 @@
+.box {
+    width: 600px;
+    height: 500px;
+    border: 2px solid blue;
+    border-radius: 10px; /* Adjust the radius for nicer edges */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white; /* Optional: Add a background color */
+  }
+  
+
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+  }
+  
