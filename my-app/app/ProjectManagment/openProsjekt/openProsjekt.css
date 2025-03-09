@@ -1,4 +1,4 @@
-.project-managment {
+.open-prosjekt {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -7,23 +7,13 @@
 
 .box-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px; /* Adjust the gap between boxes as needed */
-}
-
-.left-box {
-  grid-row: span 2; /* Make the left box span two rows */
-}
-
-.right-box {
-  display: grid;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px; /* Adjust the gap between boxes as needed */
 }
 
 .button-navigering {
-  width: 200px; /* Increased from 100px to 150px */
-  height: 200px; /* Increased from 100px to 150px */
+  width: 200px;
+  height: 200px;
   background-color: #007bff;
   color: white;
   border: none;
@@ -33,30 +23,24 @@
   justify-content: center;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  font-size: 1.5rem; /* Endre størelse her! */;
-  font-weight: bold;
+  font-size: 1.5rem; /* Make the text bigger */
+  font-weight: bold; /* Make the text thicker */
 }
 
-.button-navigering :hover {
+.button-navigering:hover {
   background-color: #0263cb;
 }
-/* For mobil format */
+
+/* For mobile format */
 @media (max-width: 600px) {
   .box-container {
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(3, 1fr);
-  }
-
-  .left-box {
-    grid-row: auto; /* Reset the row span */
-  }
-
-  .right-box {
-    grid-template-rows: auto; /* Reset the row template */
+    grid-template-rows: repeat(6, 1fr);
   }
 
   .button-navigering {
     width: 150px; /* Adjust width for mobile */
     height: 150px; /* Adjust height for mobile */
+    font-size: 1.2rem; /* Adjust font size for mobile */
   }
 }

@@ -8,18 +8,23 @@ export default function ProsjektManagment() {
     <div className="project-managment">
       <div className="box-container">
         <div className="right-box">
-         <Box>
-          <p>Box 1</p>
-         </Box>
-         <Box>
-            <ButtonNavigering route="/main" label="Tilbake" />
+        
+          <Box>
+          <ButtonNavigering route="/ProjectManagment/nyttProsjekt" label="Nytt Prosjekt" />
           </Box>
+          
+          <Box>
+          <ButtonNavigering route="/ProjectManagment/openProsjekt" label="Åpne Prosjekt" />
+          </Box>
+          
+          
         </div>
         <div className="left-box">
-          <Box>
-            <p>Box 2</p>
-          </Box>
-         
+        <Box>
+        <ButtonNavigering route="/ProjectManagment/prosess" label="Prosess" />
+        </Box>
+          
+
         </div>
       </div>
     </div> 
