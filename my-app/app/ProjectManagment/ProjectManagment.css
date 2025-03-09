@@ -1,23 +1,22 @@
-.container {
-  position: relative;
-  width: 100%;
+.project-managment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 100vh;
 }
 
-.horizontal-separator {
-  position: absolute;
-  top: 400px;
-  left: 0;
-  width: 400px;
-  height: 2px;
-  background-color: blue;
+.box-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px; /* Adjust the gap between boxes as needed */
 }
 
-.vertical-separator {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 2px;
-  height: 100%;
-  background-color: blue;
+.left-box {
+  grid-row: span 2; /* Make the left box span two rows */
+}
+
+.right-box {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px; /* Adjust the gap between boxes as needed */
 }

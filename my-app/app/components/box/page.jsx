@@ -1,11 +1,10 @@
 import React from 'react';
 import "./box.css";
 
-export default function Box() {
+export default function Box( { children }) {
   return (
-    <div className="container">
-      <div className="box">This is a centered boxx
-      </div>
+    <div className="box">
+      {children}  
     </div>
   );
 }
