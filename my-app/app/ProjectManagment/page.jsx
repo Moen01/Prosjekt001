@@ -11,14 +11,15 @@ export default function ProsjektManagment() {
          <Box>
           <p>Box 1</p>
          </Box>
+         <Box>
+            <ButtonNavigering route="/main" label="Tilbake" />
+          </Box>
         </div>
         <div className="left-box">
           <Box>
             <p>Box 2</p>
           </Box>
-          <Box>
-            <ButtonNavigering route="/main" label="Tilbake til hovedsiden" />
-          </Box>
+         
         </div>
       </div>
     </div> 
