@@ -2,8 +2,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 100vh; /* Full viewport height */
 }
+
+.content-container {
+  display: flex;
+  align-items: center; /* Vertically center the items */
+  justify-content: center; /* Horizontally center the items */
+  gap: 40px; /* Equal spacing between the buttons and the line */
+}
+
 
 .box-container {
   display: grid;

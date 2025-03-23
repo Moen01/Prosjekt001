@@ -4,8 +4,6 @@ import styles from '../styles/page.module.css';
 import Header from '../components/Layout/Header';
 import Delay from '../components/Layout/delay';
 import Ffmea from '../(pre-prod)/ffmea/page';
-import Square from '../components/Layout/Square';
-
 
 export default function PageRight() {
   

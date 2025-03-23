@@ -1,0 +1,6 @@
+.splitter-horizontally {
+  width: 60%; /* 60% of the screen width */
+  height: 2px; /* Thickness of the line */
+  background-color: black; /* Line color */
+  margin: 20px auto; /* Center the line and add vertical spacing */
+}
