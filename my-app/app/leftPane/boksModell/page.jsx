@@ -5,6 +5,9 @@ import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import './boksModell.css';
 
+// This component is a 3D model viewer that allows users to upload STL files, 
+// view them in a 3D space, and add comments at specific points on the model.
+// Handle ONLY STL files!!!!
 export default function BoksModell() {
     const mountRef = useRef(null);
     const [scene, setScene] = useState(null);
