@@ -1,1 +1,0 @@
-// lage kort til fmea

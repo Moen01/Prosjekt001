@@ -24,7 +24,7 @@ export default function FamilyFmeaHandler() {
     const newBlog = {
       id: newId,
       title: newBlogTitle,
-      link: `/blog/post${newId}`,
+      link: `/newFamily?title=${encodeURIComponent(newBlogTitle)}`, // Link to /newFamily with title as a query parameter
     };
 
     // Add the new blog post and sort the list alphabetically
