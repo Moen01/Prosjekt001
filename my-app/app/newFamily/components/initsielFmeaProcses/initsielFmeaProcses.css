@@ -57,7 +57,7 @@
   flex-direction: column; /* Stack content vertically */
   align-items: center; /* Center content horizontally */
   justify-content: center; /* Center content vertically */
-  outline: 2px solid red; /* Add a red outline */
+  /* outline: 2px solid rgb(8, 7, 7); /* LINER HELE DIV BOXEN!!  Add a red outline */
   position: relative; /* For positioning child elements */
   padding: 0; /* Ensure no padding pushes content */
   margin: 0; /* Ensure no margin affects alignment */

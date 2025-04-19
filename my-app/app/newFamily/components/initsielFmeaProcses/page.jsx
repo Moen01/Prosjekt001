@@ -55,7 +55,7 @@ export default function InitsielFmeaProsess({ title }) {
   return (
     <div className="outer-rectangle">
       <div className="left-inner-rectangle">
-        <div className="tilted-text">{title}</div> {/* Display the title inside */}
+        <div className="tilted-text">{title}</div> {/* Display the title inside  the ... */}
       </div>
       <div className="right-inner-rectangle">
         <div className="process-box-container">
