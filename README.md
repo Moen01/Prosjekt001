@@ -1,11 +1,6 @@
 # Prosjekt001
-Et eget prosjekt.
+My own project for a FMEA solution for more GUI friendly
 
-For å henter pakker:
+Get packeges:
 npm install 
-
-For frontend start:
-1) flytt til frontend i terminal: cd my-app 
-
-2)  starte forntend i termnial: npm run dev
 
