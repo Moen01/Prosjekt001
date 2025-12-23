@@ -1,0 +1,32 @@
+.buttonNavigering {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #ffffff;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 10px 15px -10px rgba(37, 99, 235, 0.9);
+}
+
+.buttonNavigering:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 20px -12px rgba(37, 99, 235, 0.9);
+}
+
+.buttonNavigering:active {
+  transform: translateY(0);
+}
+
+.buttonNavigering:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

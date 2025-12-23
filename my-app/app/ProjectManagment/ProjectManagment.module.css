@@ -1,0 +1,13 @@
+.projectManagement {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* Full viewport height */
+}
+
+.contentContainer {
+  display: flex;
+  align-items: center; /* Vertically center the items */
+  justify-content: center; /* Horizontally center the items */
+  gap: 40px; /* Equal spacing between the buttons and the line */
+}

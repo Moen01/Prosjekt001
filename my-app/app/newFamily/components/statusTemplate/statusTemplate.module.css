@@ -1,0 +1,57 @@
+.statusTemplate {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  width: 140px;
+  background: rgba(248, 250, 252, 0.92);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px -28px rgba(15, 23, 42, 0.5);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  backdrop-filter: blur(6px);
+  overflow: hidden;
+}
+
+.statusTemplate:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 24px 48px -28px rgba(37, 99, 235, 0.4);
+}
+
+.header {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1f2937;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.statusContent {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.statusTemplate:hover .statusContent {
+  max-height: 200px;
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.statusBadge {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid rgba(15, 23, 42, 0.15);
+}
+
+.statusLabel {
+  font-size: 0.7rem;
+  color: #334155;
+}

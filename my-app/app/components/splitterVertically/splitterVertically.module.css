@@ -1,0 +1,9 @@
+.splitterVertically {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 2px; /* Thickness of the line */
+  height: 100vh; /* Height of the line */
+  background: black; /* Line color */
+  z-index: 10;
+}

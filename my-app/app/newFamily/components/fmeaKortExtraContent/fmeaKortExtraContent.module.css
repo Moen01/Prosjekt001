@@ -1,0 +1,130 @@
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.35);
+  z-index: 1000;
+}
+
+.dialog {
+  position: relative;
+  width: 520px;
+  min-height: 420px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 40px 70px -40px rgba(15, 23, 42, 0.45);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.boxwithBoxes {
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.rowGroup {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.preventiveSection {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.heatMapSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.boxRow {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 32px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.boxRow2of3 {
+  flex: 2;
+  border-right: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.boxRow1of3 {
+  flex: 1;
+  border-right: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.boxRow1of3:last-child, .insideLinerigth1of3 {
+  border-right: none;
+}
+.greenPlusBtn {
+  background: #2ecc40;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+.heatMapBar {
+  display: flex;
+  width: 100%;
+  min-height: 24px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.insideLine2of3Length {
+  flex: 2;
+  background: #ffe5e5;
+  border-right: 1px solid #ddd;
+}
+.insideLineleft1of3, .insideLinerigth1of3 {
+  flex: 1;
+  background: #fffbe5;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.primaryButton {
+  padding: 0.65rem 1.5rem;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  font-weight: 600;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primaryButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 20px 36px -24px rgba(37, 99, 235, 0.6);
+}

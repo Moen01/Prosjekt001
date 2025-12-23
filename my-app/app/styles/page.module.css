@@ -1,86 +1,74 @@
-/* CSS */
-.container {
-  display: flex;
-  height: 100vh; /* Full viewport height */
-}
-
-.leftPane {
-  flex: 1; /* 1 part out of 4 */
-  background-color: #f0f0f0; /* Optional: for visual distinction */
-  padding: 20px;
-}
-
-.rightPane {
-  flex: 3; /* 3 parts out of 4 */
-  background-color: #ffffff; /* Optional: for visual distinction */
-  padding: 20px;
-}
-
-.separator {
-  width: 2px;
-  background-color: #000; /* Color of the separator line */
-  height: 100%; /* Full height of the container */
-}
-
 .header {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  background-color: #e0e0e0; /* Gray-toned background */
-  padding: 20px;
-  border-radius: 10px;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
-.header button {
-  text-align: center;
-  padding: 4px;
-  border-radius: 10px;
-  background-color: #0070f3;
-  color: white;
+.button1,
+.button2,
+.button3 {
+  padding: 0.75rem 1.5rem;
   border: none;
-  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #ffffff;
   cursor: pointer;
-  transition: background-color 0.3s;
-  margin: 0 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.header button:hover {
-  background-color: #005bb5;
+.button1 {
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
 }
 
-
-
-.header button1:hover {
-  background-color: #ff5733; /* Different background color on hover */
-  transform: scale(1.1); /* Slightly enlarge the button */
+.button2 {
+  background: linear-gradient(135deg, #6366f1, #4338ca);
 }
 
-.header button:hover {
-  background-color: #33ff57; /* Different background color on hover */
-  transform: rotate(10deg); /* Slightly rotate the button */
+.button3 {
+  background: linear-gradient(135deg, #f97316, #f59e0b);
 }
 
-.header button:hover {
-  background-color: #1ad1b8; /* Different background color on hover */
-  transform: scale(1.2); /* Slightly enlarge the button */
+.button1:hover,
+.button2:hover,
+.button3:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 20px 36px -26px rgba(15, 23, 42, 0.45);
 }
 
-.button4 button:hover {
-  background-color: #ff5733; /* Different background color on hover */
-  transform: scale(1.1); /* Slightly enlarge the button */
+.barometerContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
-.button5 button:hover {
-  background-color: #ff5733; /* Different background color on hover */
-  transform: scale(1.1); /* Slightly enlarge the button */
+.barometerTrack {
+  flex: 1;
+  height: 10px;
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 9999px;
+  overflow: hidden;
 }
 
-.button6 button:hover {
-  background-color: #ff5733; /* Different background color on hover */
-  transform: scale(1.1); /* Slightly enlarge the button */
+.barometerFill {
+  height: 100%;
+  background: linear-gradient(135deg, #34d399, #22c55e);
 }
 
-.button7 button:hover {
-  background-color: #ff5733; /* Different background color on hover */
-  transform: scale(1.1); /* Slightly enlarge the button */
+.barometerLabel {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.splitScreen {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.splitScreenPane {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 20px 40px -32px rgba(15, 23, 42, 0.35);
 }

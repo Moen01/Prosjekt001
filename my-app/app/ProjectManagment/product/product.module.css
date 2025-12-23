@@ -1,0 +1,20 @@
+.openProsjekt {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  
+  .boxContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px; /* Adjust the gap between boxes as needed */
+  }
+  
+  /* For mobile format */
+  @media (max-width: 600px) {
+    .boxContainer {
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(6, 1fr);
+    }
+  }

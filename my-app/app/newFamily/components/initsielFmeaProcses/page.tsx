@@ -2,192 +2,239 @@
 
 import { useCallback, useMemo, useState } from "react";
 import clsx from "clsx";
-import type { ProcessBox } from "@lib/types/fmea";
 import { createId } from "@lib/utils/id";
-import FmeaKort from "../fmeaKort/page";
-import FmeaKortExtra from "../fmeaKortExtra/page";
-import FmeaKortExtraContent from "../fmeaKortExtraContent/page";
-import ProcessDefinerProcessBox from "../processDefinerProcessBox/page";
-import RedSlidePanel from "../redSlidePanel/page";
 import styles from "./initsielFmeaProcses.module.css";
+
+type ProcessStatus = "not-started" | "in-progress" | "completed";
+
+interface Equipment {
+  id: string;
+  title: string;
+  status: ProcessStatus;
+}
+
+interface ProcessRow {
+  id: string;
+  title: string;
+  status: ProcessStatus;
+  notes: string;
+  equipment: Equipment[];
+}
 
 interface InitsielFmeaProsessProps {
   title?: string | null;
   onProcessAdded?: () => void;
 }
 
-interface ActiveExtraState {
-  boxId: string;
-  cardId: string;
-}
+const statusCycle: Record<ProcessStatus, ProcessStatus> = {
+  "not-started": "in-progress",
+  "in-progress": "completed",
+  completed: "not-started",
+};
 
-const createProcessBox = (): ProcessBox => ({
-  id: createId(),
-  rotatedText: { id: createId(), value: "", isBold: false },
-  textFields: [],
-  initialCardId: createId(),
-  extraCardIds: [],
-});
+const initialProcesses: ProcessRow[] = [
+  {
+    id: "converter",
+    title: "Converter",
+    status: "completed",
+    notes: "Equipment installed with FAT report.",
+    equipment: [
+      { id: "conv-chem", title: "Chemical composition", status: "completed" },
+      { id: "conv-yield", title: "Yield strength", status: "in-progress" },
+      { id: "conv-uts", title: "Ultimate tensile strength", status: "not-started" },
+    ],
+  },
+  {
+    id: "cnc",
+    title: "CNC machine",
+    status: "in-progress",
+    notes: "Fixtures missing torque validation.",
+    equipment: [
+      { id: "cnc-fixt", title: "Fixtures", status: "in-progress" },
+      { id: "cnc-prog", title: "Programs", status: "not-started" },
+      { id: "cnc-maint", title: "Maintenance plan", status: "not-started" },
+    ],
+  },
+  {
+    id: "robot",
+    title: "Robot cell",
+    status: "not-started",
+    notes: "Awaiting layout approval.",
+    equipment: [
+      { id: "robot-gripper", title: "Gripper kit", status: "not-started" },
+      { id: "robot-safety", title: "Safety validation", status: "not-started" },
+      { id: "robot-training", title: "Operator training", status: "not-started" },
+    ],
+  },
+];
 
 export default function InitsielFmeaProsess({
   title,
   onProcessAdded,
 }: InitsielFmeaProsessProps) {
-  const [processBoxes, setProcessBoxes] = useState<ProcessBox[]>([]);
-  const [activePanelId, setActivePanelId] = useState<string | null>(null);
-  const [activeExtra, setActiveExtra] = useState<ActiveExtraState | null>(null);
-
-  const hasProcesses = useMemo(() => processBoxes.length > 0, [processBoxes]);
-
-  const insertProcessBox = useCallback(
-    (index?: number) => {
-      setProcessBoxes((prev) => {
-        const next = [...prev];
-        if (typeof index === "number") {
-          next.splice(index, 0, createProcessBox());
-        } else {
-          next.push(createProcessBox());
-        }
-        return next;
-      });
-      onProcessAdded?.();
-    },
-    [onProcessAdded]
+  const [processes, setProcesses] = useState<ProcessRow[]>(initialProcesses);
+  const [selectedProcessId, setSelectedProcessId] = useState<string>(
+    initialProcesses[0]?.id ?? ""
   );
 
-  const removeProcessBox = useCallback((processId: string) => {
-    setProcessBoxes((prev) => prev.filter((box) => box.id !== processId));
-  }, []);
+  const selectedProcess = useMemo(
+    () => processes.find((row) => row.id === selectedProcessId) ?? processes[0],
+    [processes, selectedProcessId]
+  );
 
-  const addFmeaCard = useCallback((processId: string) => {
-    setProcessBoxes((prev) =>
-      prev.map((box) =>
-        box.id === processId
-          ? { ...box, extraCardIds: [...box.extraCardIds, createId()] }
-          : box
+  const handleToggleProcessStatus = useCallback((processId: string) => {
+    setProcesses((prev) =>
+      prev.map((row) =>
+        row.id === processId
+          ? { ...row, status: statusCycle[row.status] }
+          : row
       )
     );
   }, []);
 
-  const handleDeleteProcess = useCallback(
-    (processId: string) => {
-      if (typeof window !== "undefined") {
-        const confirmed = window.confirm(
-          "Are you sure you want to delete this process?"
-        );
-        if (!confirmed) {
-          return;
-        }
-      }
-      removeProcessBox(processId);
+  const handleToggleEquipmentStatus = useCallback(
+    (processId: string, equipmentId: string) => {
+      setProcesses((prev) =>
+        prev.map((row) =>
+          row.id === processId
+            ? {
+                ...row,
+                equipment: row.equipment.map((item) =>
+                  item.id === equipmentId
+                    ? { ...item, status: statusCycle[item.status] }
+                    : item
+                ),
+              }
+            : row
+        )
+      );
     },
-    [removeProcessBox]
+    []
   );
 
+  const handleAddProcess = () => {
+    const newProcess: ProcessRow = {
+      id: createId(),
+      title: `Process ${processes.length + 1}`,
+      status: "not-started",
+      notes: "Add notes or key actions for this process.",
+      equipment: [
+        { id: createId(), title: "Quality controls", status: "not-started" },
+        { id: createId(), title: "Preventive maintenance", status: "not-started" },
+        { id: createId(), title: "Documentation", status: "not-started" },
+      ],
+    };
+
+    setProcesses((prev) => [...prev, newProcess]);
+    setSelectedProcessId(newProcess.id);
+    onProcessAdded?.();
+  };
+
+  const handleAddEquipment = (processId: string) => {
+    setProcesses((prev) =>
+      prev.map((row) =>
+        row.id === processId
+          ? {
+              ...row,
+              equipment: [
+                ...row.equipment,
+                {
+                  id: createId(),
+                  title: `New element ${row.equipment.length + 1}`,
+                  status: "not-started",
+                },
+              ],
+            }
+          : row
+      )
+    );
+  };
+
   return (
-    <div className={styles.root}>
-      <div className={styles.leftRail}>
-        <span className={styles.tiltedText}>{title ?? "Process"}</span>
-      </div>
-      <div className={styles.processColumn}>
-        {hasProcesses ? (
-          processBoxes.map((box, index) => (
-            <section key={box.id} className={styles.processCard}>
-              <div className={styles.cardActions}>
-                <button
-                  type="button"
-                  className={styles.iconButton}
-                  title="Add process above"
-                  onClick={() => insertProcessBox(index)}
-                >
-                  +
-                </button>
-                <button
-                  type="button"
-                  className={styles.iconButton}
-                  title="Remove process"
-                  onClick={() => handleDeleteProcess(box.id)}
-                >
-                  ×
-                </button>
-                <button
-                  type="button"
-                  className={styles.iconButton}
-                  title="Add process below"
-                  onClick={() => insertProcessBox(index + 1)}
-                >
-                  ↓
-                </button>
-              </div>
+    <section className={styles.wrapper}>
+      <div className={styles.board}>
+        <div className={styles.familyColumn}>
+          <span className={styles.familyLabel}>
+            {(title ?? "B62").toUpperCase()}
+          </span>
+        </div>
 
-              <div className={styles.cardMeta}>
-                <ProcessDefinerProcessBox />
-                <div className={styles.processGrid}>
-                  <FmeaKort />
-                </div>
-              </div>
-
-              <div className={styles.extraZone}>
-                <div className={styles.extraHeader}>
-                  <span>Related FMEA Cards</span>
-                  <button
-                    type="button"
-                    className={styles.addButton}
-                    onClick={() => addFmeaCard(box.id)}
+        <div className={styles.processColumn}>
+          {processes.map((process) => (
+            <article key={process.id} className={styles.processRow}>
+              <div
+                className={clsx(styles.processHeader, {
+                  [styles.processHeaderSelected]: process.id === selectedProcess?.id,
+                })}
+                onClick={() => setSelectedProcessId(process.id)}
+                onContextMenu={(event) => {
+                  event.preventDefault();
+                  handleToggleProcessStatus(process.id);
+                }}
+              >
+                <div className={styles.processTitleRow}>
+                  <span className={styles.processName}>{process.title}</span>
+                  <span
+                    className={clsx(
+                      styles.processStatus,
+                      styles[`status${process.status.replace("-", "")}`]
+                    )}
                   >
-                    Add card
-                  </button>
+                    {process.status === "completed"
+                      ? "Completed"
+                      : process.status === "in-progress"
+                      ? "In work"
+                      : "Not started"}
+                  </span>
                 </div>
-                <div className={styles.extraList}>
-                  {box.extraCardIds.map((cardId) => (
-                    <FmeaKortExtra
-                      key={cardId}
-                      fmeaId={cardId}
-                      onClick={() =>
-                        setActiveExtra({ boxId: box.id, cardId })
-                      }
-                    />
-                  ))}
-                </div>
-                <button
-                  type="button"
-                  className={styles.slidePanelTrigger}
-                  onClick={() =>
-                    setActivePanelId((current) =>
-                      current === box.id ? null : box.id
-                    )
-                  }
-                >
-                  Open process details
-                </button>
+                <p className={styles.processNotes}>{process.notes}</p>
               </div>
 
-              <RedSlidePanel
-                open={activePanelId === box.id}
-                onClose={() => setActivePanelId(null)}
-              />
-            </section>
-          ))
-        ) : (
-          <div className={styles.emptyState}>
-            <p>No processes added yet.</p>
-            <button
-              type="button"
-              className={clsx(styles.addButton, styles.emptyButton)}
-              onClick={() => insertProcessBox()}
-            >
-              Add process
-            </button>
-          </div>
-        )}
-      </div>
+              <div className={styles.equipmentTrack}>
+                {process.equipment.map((equipment) => (
+                  <button
+                    key={equipment.id}
+                    type="button"
+                    className={clsx(
+                      styles.equipmentCard,
+                      styles[`equipment${equipment.status.replace("-", "")}`]
+                    )}
+                    onContextMenu={(event) => {
+                      event.preventDefault();
+                      handleToggleEquipmentStatus(process.id, equipment.id);
+                    }}
+                  >
+                    <span className={styles.equipmentTitle}>{equipment.title}</span>
+                    <span className={styles.equipmentStatus}>
+                      {equipment.status === "completed"
+                        ? "Completed"
+                        : equipment.status === "in-progress"
+                        ? "In work"
+                        : "Not started"}
+                    </span>
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  className={styles.addEquipmentCard}
+                  onClick={() => handleAddEquipment(process.id)}
+                >
+                  <span aria-hidden>＋</span>
+                  Add element
+                </button>
+              </div>
+            </article>
+          ))}
 
-      {activeExtra ? (
-        <FmeaKortExtraContent
-          fmeaId={activeExtra.cardId}
-          onClose={() => setActiveExtra(null)}
-        />
-      ) : null}
-    </div>
+          <button
+            type="button"
+            className={styles.addProcessButton}
+            onClick={handleAddProcess}
+          >
+            Add process
+          </button>
+        </div>
+      </div>
+    </section>
   );
 }

@@ -1,6 +1,0 @@
-.splitter-vertically {
-  width: 2px; /* Thickness of the line */
-  height: 400px; /* Height of the line */
-  background-color: black; /* Line color */
-  margin: 0 auto; /* Center the line horizontally */
-}

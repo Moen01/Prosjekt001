@@ -1,49 +1,62 @@
-/* From Uiverse.io by Praashoo7 */ 
-.input {
-    border: none;
-    outline: none;
-    border-radius: 15px;
-    padding: 1em;
-    background-color: #ccc;
-    box-shadow: inset 2px 5px 10px rgba(0,0,0,0.3);
-    transition: 300ms ease-in-out;
-  }
-  
-  .input:focus {
-    background-color: white;
-    transform: scale(1.05);
-    box-shadow: 13px 13px 100px #969696,
-               -13px -13px 100px #ffffff;
-  }
-/*NYTT */
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background-color: #f0f0f0; /* Optional: for visual distinction */
-  }
-  
-  .input {
-    margin: 10px;
-    padding: 10px;
-    width: 200px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #dbeafe, #eff6ff);
+  padding: 1.5rem;
+}
 
-  .button {
-    margin: 10px;
-    padding: 10px 20px;
-    background-color: #0070f3;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .button:hover {
-    background-color: #005bb5;
-  }
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 24px 48px -32px rgba(15, 23, 42, 0.35);
+  min-width: 320px;
+}
+
+.input {
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
+.button {
+  margin-top: 0.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px -20px rgba(37, 99, 235, 0.6);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.error {
+  color: #dc2626;
+  font-size: 0.85rem;
+  margin: 0.25rem 0 0;
+}

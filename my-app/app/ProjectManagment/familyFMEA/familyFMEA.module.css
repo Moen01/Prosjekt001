@@ -1,0 +1,213 @@
+.openProsjekt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.boxContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px; /* Adjust the gap between boxes as needed */
+}
+
+.buttonNavigering {
+  width: 200px;
+  height: 200px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1.5rem; /* Make the text bigger */
+  font-weight: bold; /* Make the text thicker */
+}
+
+.buttonNavigering:hover {
+  background-color: #0263cb;
+}
+
+.familyFmeaContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* <--- This centers .blog-box horizontally */
+  height: 100vh;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+.nameplate {
+  font-size: 1.5rem; /* Larger font size for the nameplate */
+  font-weight: bold; /* Bold text */
+  margin-bottom: 10px; /* Space between the nameplate and the blog list */
+  text-align: center;
+  width: 100%; /* Make it span the full width of the box */
+  padding-bottom: 5px; /* Add padding below the text */
+  position: relative; /* For positioning the red X button */
+  padding-top: 10px;
+}
+
+.removeButton {
+  position: absolute; /* Position the button relative to the container */
+  bottom: 0; /* Align it to the bottom */
+  right: 0; /* Align it to the right */
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px; /* Smaller width for the "X" button */
+  height: 40px; /* Same height as other buttons */
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.removeButton:hover {
+  background-color: darkred; /* Darker red on hover */
+}
+
+.blogBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 400px;
+  height: 400px;
+  border: 2px solid black;
+  padding: 10px; /* <--- This adds 20px padding on all sides */
+  background-color: #f9f9f9;
+  position: relative;
+}
+.blogList {
+  width: 100%; /* Full width of the blog-box */
+  height: 100%; /* Full height of the container */
+  overflow-y: auto; /* Scrollable if content overflows */
+  border: 1px solid black; /* Visible border around the blog list */
+  padding: 10px; /* Add padding inside the blog list */
+  margin-top: 10px; /* Space between the nameplate and the blog list */
+}
+
+.blogItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 10px; /* Space between blog items */
+  color: #007bff; /* Link color */
+  text-decoration: none; /* Remove underline */
+  font-size: 1rem; /* Font size */
+  padding: 5px; /* Add padding for better hover effect */
+  border: 1px solid transparent; /* Add a transparent border for hover effect */
+  transition: background-color 0.3s ease, border-color 0.3s ease; /* Smooth transition */
+  cursor: pointer; /* Show pointer cursor on hover */
+  background: transparent;
+  border-radius: 4px;
+}
+
+.blogItem:hover {
+  background-color: #e6f7ff; /* Light blue background on hover */
+  border-color: #007bff; /* Add a border color on hover */
+  color: #0056b3; /* Darker blue text color on hover */
+  text-decoration: none; /* Remove underline on hover */
+}
+
+.blogItemSelected {
+  background-color: #cce5ff; /* Highlight selected blog post */
+  border-color: #0056b3; /* Darker border for selected blog post */
+  color: #0056b3; /* Darker text color for selected blog post */
+}
+
+/* Ensure the parent box reacts when a child is hovered */
+.blogBox:hover .blogItem {
+  color: #0056b3; /* Darker blue for blog items on hover */
+}
+
+.buttonContainer {
+  display: flex;
+  align-items: center; /* Align buttons vertically */
+  justify-content: space-between; /* Space out buttons */
+  width: 100%; /* Make the container span the full width */
+  margin-top: 10px; /* Add spacing above the buttons */
+  position: relative; /* For positioning the red button */
+}
+
+.actionButtons {
+  display: flex;
+  gap: 10px; /* Add spacing between Button 1 and Button 2 */
+}
+
+.actionButton {
+  width: 80px; /* Button width */
+  height: 40px; /* Button height */
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.6rem;
+}
+
+.actionButton:hover {
+  background-color: #0056b3;
+}
+
+.actionButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #94a3b8;
+}
+
+.inputContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.newBlogItem {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.newBlogInput {
+  flex: 1;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.error {
+  margin-top: 12px;
+  color: #dc2626;
+  font-size: 0.85rem;
+  align-self: flex-start;
+}
+.nameplateRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Align items to the left */
+  gap: 12px; /* Space between button and text */
+  width: 100%; /* Make row take full width of blog-box */
+}
+/* For mobile format */
+@media (max-width: 600px) {
+  .boxContainer {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(6, 1fr);
+  }
+
+  .buttonNavigering {
+    width: 150px; /* Adjust width for mobile */
+    height: 150px; /* Adjust height for mobile */
+    font-size: 1.2rem; /* Adjust font size for mobile */
+  }
+}
