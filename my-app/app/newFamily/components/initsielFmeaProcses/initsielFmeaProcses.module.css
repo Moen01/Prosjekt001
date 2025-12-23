@@ -1,0 +1,159 @@
+.root {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 1.5rem;
+  width: 100%;
+  align-items: flex-start;
+}
+
+.leftRail {
+  position: sticky;
+  top: 6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+.tiltedText {
+  transform: rotate(-90deg);
+  transform-origin: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1d4ed8;
+  letter-spacing: 0.08em;
+}
+
+.processColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.processCard {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr minmax(220px, 280px);
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 24px 48px -32px rgba(15, 23, 42, 0.35);
+}
+
+.cardMeta {
+  display: flex;
+ 
+  gap: 1rem;
+}
+
+.cardActions {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.iconButton {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  border: none;
+  background: rgba(148, 163, 184, 0.24);
+  color: #0f172a;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.iconButton:hover {
+  background: rgba(59, 130, 246, 0.35);
+  transform: translateY(-1px);
+}
+
+.extraZone {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.extraHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.addButton {
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  border: none;
+  background: linear-gradient(135deg, #f97316, #f59e0b);
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.addButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px -18px rgba(249, 115, 22, 0.6);
+}
+
+.extraList {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  border: 2px dashed rgba(148, 163, 184, 0.45);
+  border-radius: 16px;
+  background: rgba(248, 250, 252, 0.65);
+  text-align: center;
+  gap: 1rem;
+}
+
+.emptyButton {
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.emptyButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px -20px rgba(37, 99, 235, 0.6);
+}
+
+.slidePanelTrigger {
+  align-self: flex-end;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(59, 130, 246, 0.45);
+  background: transparent;
+  cursor: pointer;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.processGrid {
+  display: grid;
+  gap: 1rem;
+}
