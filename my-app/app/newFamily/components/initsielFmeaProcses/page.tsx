@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import clsx from "clsx";
 import { createId } from "@lib/utils/id";
 import styles from "./initsielFmeaProcses.module.css";
@@ -25,6 +25,9 @@ interface InitsielFmeaProsessProps {
   title?: string | null;
   onProcessAdded?: () => void;
 }
+
+// 5M labels for the equipment dropdown.
+const EQUIPMENT_5M_LABELS = ["Man", "Machine", "Measure", "Milieu", "Material"];
 
 const statusCycle: Record<ProcessStatus, ProcessStatus> = {
   "not-started": "in-progress",
@@ -76,11 +79,59 @@ export default function InitsielFmeaProsess({
   const [selectedProcessId, setSelectedProcessId] = useState<string>(
     initialProcesses[0]?.id ?? ""
   );
+  const [equipmentPanels, setEquipmentPanels] = useState<
+    Record<string, { open: boolean; items: { id: string; label: string }[] }>
+  >({});
+  const equipmentRefs = useRef(new Map<string, HTMLDivElement | null>());
+  const [equipmentHeights, setEquipmentHeights] = useState<Record<string, number>>(
+    {}
+  );
 
   const selectedProcess = useMemo(
     () => processes.find((row) => row.id === selectedProcessId) ?? processes[0],
     [processes, selectedProcessId]
   );
+
+  useLayoutEffect(() => {
+    const elements = Array.from(equipmentRefs.current.values()).filter(
+      (element): element is HTMLDivElement => Boolean(element)
+    );
+
+    if (elements.length === 0) return;
+
+    const updateHeights = (targets: HTMLElement[]) => {
+      setEquipmentHeights((prev) => {
+        let next = prev;
+        let changed = false;
+
+        targets.forEach((target) => {
+          const equipmentId = target.dataset.equipmentId;
+          if (!equipmentId) return;
+          const height = Math.round(target.getBoundingClientRect().height);
+          if (prev[equipmentId] !== height) {
+            if (!changed) {
+              next = { ...prev };
+              changed = true;
+            }
+            next[equipmentId] = height;
+          }
+        });
+
+        return changed ? next : prev;
+      });
+    };
+
+    updateHeights(elements);
+
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver((entries) => {
+      updateHeights(entries.map((entry) => entry.target as HTMLElement));
+    });
+
+    elements.forEach((element) => observer.observe(element));
+
+    return () => observer.disconnect();
+  }, [processes]);
 
   const handleToggleProcessStatus = useCallback((processId: string) => {
     setProcesses((prev) =>
@@ -150,6 +201,28 @@ export default function InitsielFmeaProsess({
     );
   };
 
+  const toggleEquipmentPanel = useCallback((equipmentId: string) => {
+    setEquipmentPanels((prev) => {
+      const current = prev[equipmentId] ?? { open: false, items: [] };
+      // Track open state per equipment for the 5M dropdown.
+      return { ...prev, [equipmentId]: { ...current, open: !current.open } };
+    });
+  }, []);
+
+  const addEquipmentPanelItem = useCallback((equipmentId: string, label: string) => {
+    setEquipmentPanels((prev) => {
+      const current = prev[equipmentId] ?? { open: true, items: [] };
+      const nextItem = {
+        id: createId(),
+        label: `${label} element ${current.items.length + 1}`,
+      };
+      return {
+        ...prev,
+        [equipmentId]: { open: true, items: [...current.items, nextItem] },
+      };
+    });
+  }, []);
+
   return (
     <section className={styles.wrapper}>
       <div className={styles.board}>
@@ -192,27 +265,83 @@ export default function InitsielFmeaProsess({
 
               <div className={styles.equipmentTrack}>
                 {process.equipment.map((equipment) => (
-                  <button
-                    key={equipment.id}
-                    type="button"
-                    className={clsx(
-                      styles.equipmentCard,
-                      styles[`equipment${equipment.status.replace("-", "")}`]
-                    )}
-                    onContextMenu={(event) => {
-                      event.preventDefault();
-                      handleToggleEquipmentStatus(process.id, equipment.id);
-                    }}
-                  >
-                    <span className={styles.equipmentTitle}>{equipment.title}</span>
-                    <span className={styles.equipmentStatus}>
-                      {equipment.status === "completed"
-                        ? "Completed"
-                        : equipment.status === "in-progress"
-                        ? "In work"
-                        : "Not started"}
-                    </span>
-                  </button>
+                  <div key={equipment.id} className={styles.equipmentStack}>
+                    <div
+                      className={clsx(
+                        styles.equipmentCard,
+                        styles[`equipment${equipment.status.replace("-", "")}`]
+                      )}
+                      data-equipment-id={equipment.id}
+                      ref={(element) => {
+                        if (element) {
+                          equipmentRefs.current.set(equipment.id, element);
+                        } else {
+                          equipmentRefs.current.delete(equipment.id);
+                        }
+                      }}
+                      onContextMenu={(event) => {
+                        event.preventDefault();
+                        handleToggleEquipmentStatus(process.id, equipment.id);
+                      }}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <span className={styles.equipmentTitle}>{equipment.title}</span>
+                      <span className={styles.equipmentStatus}>
+                        {equipment.status === "completed"
+                          ? "Completed"
+                          : equipment.status === "in-progress"
+                          ? "In work"
+                          : "Not started"}
+                      </span>
+                      <button
+                        type="button"
+                        className={styles.equipment5mTag}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          toggleEquipmentPanel(equipment.id);
+                        }}
+                        aria-expanded={equipmentPanels[equipment.id]?.open ?? false}
+                      >
+                        5M
+                      </button>
+                    </div>
+
+                    {equipmentPanels[equipment.id]?.open ? (
+                      <div
+                        className={styles.equipment5mPanel}
+                        style={
+                          equipmentHeights[equipment.id]
+                            ? ({
+                                "--equipment-card-height": `${equipmentHeights[
+                                  equipment.id
+                                ]}px`,
+                              } as CSSProperties)
+                            : undefined
+                        }
+                      >
+                        <div className={styles.equipment5mButtons}>
+                          {EQUIPMENT_5M_LABELS.map((label) => (
+                            <button
+                              key={label}
+                              type="button"
+                              className={styles.equipment5mButton}
+                              onClick={() => addEquipmentPanelItem(equipment.id, label)}
+                            >
+                              {label}
+                            </button>
+                          ))}
+                        </div>
+                        <div className={styles.equipment5mItems}>
+                          {equipmentPanels[equipment.id]?.items.map((item) => (
+                            <div key={item.id} className={styles.equipment5mItem}>
+                              {item.label}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
                 ))}
                 <button
                   type="button"

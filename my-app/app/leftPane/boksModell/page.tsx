@@ -8,16 +8,17 @@ import {
   Mesh,
   MeshNormalMaterial,
 } from "three";
-import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+
 import FmeaFamilyKortLeftPane from "./components/fmeaFamilyKortLeftPane/page";
 import styles from "./boksModell.module.css";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 
 interface ViewerState {
   scene: Scene | null;
   camera: PerspectiveCamera | null;
   renderer: WebGLRenderer | null;
-  controls: OrbitControls | null;
+  controls: OrbitControls | null; 
 }
 
 export default function BoksModell() {
