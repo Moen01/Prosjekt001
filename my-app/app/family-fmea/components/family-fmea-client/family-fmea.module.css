@@ -13,6 +13,57 @@
   margin-bottom: 2.5rem;
 }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.familyAddElement {
+  border: 1px solid rgba(27, 42, 74, 0.45);
+  background: #ffffff;
+  color: #1b2a4a;
+  font-weight: 600;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.familyElementCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 150px;
+  max-width: 200px;
+  border: 1px solid #1b2a4a;
+  background: #ffffff;
+  padding: 0.6rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1b2a4a;
+}
+
+.familyElementName {
+  font-weight: 600;
+  color: #1b2a4a;
+}
+
+.familyElementEditButton {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.4rem;
+  border: 1px solid rgba(27, 42, 74, 0.2);
+  background: #ffffff;
+  color: #1b2a4a;
+  font-size: 0.65rem;
+  line-height: 1;
+  border-radius: 6px;
+  padding: 0.15rem 0.3rem;
+  cursor: pointer;
+}
+
 .kicker {
   text-transform: uppercase;
   letter-spacing: 0.3rem;

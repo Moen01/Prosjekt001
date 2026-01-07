@@ -1,0 +1,8 @@
+.item {
+  background: #ffffff;
+  border: 1px solid rgba(27, 42, 74, 0.2);
+  border-radius: 0.45rem;
+  padding: 0.35rem 0.45rem;
+  font-size: 0.7rem;
+  color: #1b2a4a;
+}

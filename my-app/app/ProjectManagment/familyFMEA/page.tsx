@@ -7,9 +7,15 @@ import ButtonBack from "@/app/components/buttonBack/page";
 import { createId } from "@lib/utils/id";
 import styles from "./familyFMEA.module.css";
 
+/**
+ * Family FMEA list entry for the overview panel.
+ */
 interface FamilyFmeaEntry {
+  /** Unique identifier for the entry. */
   id: string;
+  /** Display title for the family entry. */
   title: string;
+  /** Route to the Family FMEA board for this entry. */
   link: string;
 }
 
@@ -17,10 +23,28 @@ const defaultEntries: FamilyFmeaEntry[] = ["M52", "M76", "M78"].map(
   (title) => ({
     id: createId(),
     title,
-    link: `/newFamily?title=${encodeURIComponent(title)}`,
+    // Route into the active Family FMEA board (newFamily is deprecated).
+    link: `/family-fmea?title=${encodeURIComponent(title)}`,
   })
 );
 
+/**
+ * Responsibility:
+ * Render the Family FMEA selection list and navigation actions.
+ * Props:
+ * - none.
+ * State:
+ * - entries/selectedEntry: list of family entries and selection.
+ * - newTitle/isAdding: input state for new entries.
+ * - error: validation and selection errors.
+ * Side effects:
+ * - Router navigation for opening a Family FMEA.
+ * Rendering states:
+ * - loading: n/a.
+ * - error: shows error text.
+ * - empty: list still renders with no entries.
+ * - success: renders list and actions.
+ */
 export default function FamilyFmeaHandler() {
   const router = useRouter();
   const [entries, setEntries] = useState<FamilyFmeaEntry[]>(defaultEntries);
@@ -36,7 +60,21 @@ export default function FamilyFmeaHandler() {
     [entries]
   );
 
-  const handleAdd = () => {
+  /**
+   * What it does:
+   * Add a new Family FMEA entry to the list.
+   * Why it exists:
+   * Supports creating new family boards from the list view.
+   *
+   * @returns Void; updates entries and input state.
+   *
+   * @throws None.
+   * @sideEffects Updates component state.
+   *
+   * Edge cases:
+   * - Rejects empty titles and sets an error message.
+   */
+  const handleAdd = (): void => {
     const trimmed = newTitle.trim();
     if (!trimmed) {
       setError("Family FMEA name cannot be empty");
@@ -46,7 +84,8 @@ export default function FamilyFmeaHandler() {
     const newEntry: FamilyFmeaEntry = {
       id: createId(),
       title: trimmed,
-      link: `/newFamily?title=${encodeURIComponent(trimmed)}`,
+      // Route into the active Family FMEA board (newFamily is deprecated).
+      link: `/family-fmea?title=${encodeURIComponent(trimmed)}`,
     };
 
     setEntries((prev) => [...prev, newEntry]);
@@ -55,7 +94,21 @@ export default function FamilyFmeaHandler() {
     setError(null);
   };
 
-  const handleOpen = () => {
+  /**
+   * What it does:
+   * Navigate to the selected Family FMEA board.
+   * Why it exists:
+   * Opens the chosen board from the list.
+   *
+   * @returns Void; triggers router navigation.
+   *
+   * @throws None.
+   * @sideEffects Uses Next.js router navigation.
+   *
+   * Edge cases:
+   * - Shows an error when no entry is selected.
+   */
+  const handleOpen = (): void => {
     if (selectedEntry) {
       router.push(selectedEntry.link);
     } else {
@@ -63,7 +116,21 @@ export default function FamilyFmeaHandler() {
     }
   };
 
-  const handleRemove = () => {
+  /**
+   * What it does:
+   * Remove the selected entry from the list.
+   * Why it exists:
+   * Allows users to remove obsolete Family FMEA entries.
+   *
+   * @returns Void; updates entries and selection state.
+   *
+   * @throws None.
+   * @sideEffects Updates component state.
+   *
+   * Edge cases:
+   * - Shows an error when no entry is selected.
+   */
+  const handleRemove = (): void => {
     if (!selectedEntry) {
       setError("Select a Family FMEA to remove");
       return;

@@ -3,8 +3,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { createId } from "@lib/utils/id";
 import { fetchFamilies, fetchFamilyOverview } from "@lib/api/familyFmea";
-import type { FamilyFmeaOverview, Process, ProcessStatus } from "@lib/types/familyFmea";
+import type {
+  ElementDetails,
+  FamilyFmeaOverview,
+  Process,
+  ProcessStatus,
+} from "@lib/types/familyFmea";
 import ProcessBoard from "../process-board/process-board";
+import CreateItemModal, {
+  type CreateItemInitialValues,
+  type CreateItemPayload,
+} from "../create-item-modal/create-item-modal";
 import styles from "./family-fmea.module.css";
 
 interface FamilyFmeaClientProps {
@@ -14,6 +23,21 @@ interface FamilyFmeaClientProps {
 
 type StepStatus = ProcessStatus;
 
+/**
+ * What it does:
+ * Derive a step status based on acceptance criteria toggles.
+ * Why it exists:
+ * Keep a single source of truth for step progress display.
+ *
+ * @param criteria - Boolean flags for each acceptance criterion.
+ * @returns The derived step status label.
+ *
+ * @throws None.
+ * @sideEffects None.
+ *
+ * Edge cases:
+ * - Empty criteria returns "not_started".
+ */
 const deriveStepStatus = (criteria: boolean[]): StepStatus => {
   if (criteria.every(Boolean)) {
     return "completed";
@@ -24,7 +48,86 @@ const deriveStepStatus = (criteria: boolean[]): StepStatus => {
   return "not_started";
 };
 
+/**
+ * What it does:
+ * Trim and drop empty detail values from the create modal.
+ * Why it exists:
+ * Avoid persisting empty strings as meaningful data.
+ *
+ * @param details - Raw detail field values from the modal.
+ * @returns Sanitized detail object with empty values removed.
+ *
+ * @throws None.
+ * @sideEffects None.
+ *
+ * Edge cases:
+ * - All empty inputs returns an empty object.
+ */
+const normalizeDetails = (details: ElementDetails): ElementDetails => {
+  const nextDetails: ElementDetails = {};
+  const feasability = details.feasability?.trim();
+  const fmea = details.fmea?.trim();
+  const inspection = details.inspection?.trim();
+  const sc = details.sc?.trim();
+
+  if (feasability) nextDetails.feasability = feasability;
+  if (fmea) nextDetails.fmea = fmea;
+  if (inspection) nextDetails.inspection = inspection;
+  if (sc) nextDetails.sc = sc;
+
+  return nextDetails;
+};
+
+/**
+ * Internal modal state for creating processes or equipment entries.
+ */
+type CreateModalState =
+  | { mode: "process" }
+  | { mode: "equipment"; processId: string }
+  | { mode: "family" };
+
+/**
+ * Internal modal state for editing existing elements.
+ */
+type EditModalState =
+  | { mode: "family"; initialValues: CreateItemInitialValues }
+  | { mode: "equipment"; processId: string; elementId: string; initialValues: CreateItemInitialValues }
+  | { mode: "process-element"; processId: string; initialValues: CreateItemInitialValues };
+
+/**
+ * Family-level element created from the header panel.
+ */
+interface FamilyElement {
+  /** Unique identifier for the family element. */
+  id: string;
+  /** Display label for the family element. */
+  name: string;
+  /** Optional details captured in the create modal. */
+  details: ElementDetails;
+}
+
 // Client-side Family FMEA flow state and data binding.
+/**
+ * Responsibility:
+ * Load Family FMEA data and coordinate process/equipment UI state.
+ * Props:
+ * - initialFamilyId: optional family id for initial selection.
+ * - initialFamilyCode: optional family code or title for initial selection.
+ * State:
+ * - overview/processes/selectedProcessId: loaded data and selection state.
+ * - criteriaState: step acceptance toggles for guide status.
+ * - createModal: modal state for process/equipment/family creation.
+ * - editModal: modal state for editing existing elements.
+ * - familyElements: single header-level element attached to the family title.
+ * - isLoading/error: async UI state for data loading.
+ * Side effects:
+ * - useEffect: fetches families and overview data.
+ * Rendering states:
+ * - loading: shows loading label.
+ * - error: shows error label.
+ * - empty: handled by error when no data exists.
+ * - success: renders the Family FMEA board.
+ */
 export default function FamilyFmeaClient({
   initialFamilyId,
   initialFamilyCode,
@@ -33,6 +136,9 @@ export default function FamilyFmeaClient({
   const [processes, setProcesses] = useState<Process[]>([]);
   const [selectedProcessId, setSelectedProcessId] = useState<string | null>(null);
   const [criteriaState, setCriteriaState] = useState<boolean[][]>([]);
+  const [createModal, setCreateModal] = useState<CreateModalState | null>(null);
+  const [editModal, setEditModal] = useState<EditModalState | null>(null);
+  const [familyElements, setFamilyElements] = useState<FamilyElement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -92,7 +198,22 @@ export default function FamilyFmeaClient({
     return criteriaState.map(deriveStepStatus);
   }, [criteriaState, overview]);
 
-  const handleToggleProcessStatus = (processId: string) => {
+  /**
+   * What it does:
+   * Cycle the status for the specified process.
+   * Why it exists:
+   * Keeps process status updates consistent across the board.
+   *
+   * @param processId - Process id to update.
+   * @returns Void; updates state.
+   *
+   * @throws None.
+   * @sideEffects Updates component state.
+   *
+   * Edge cases:
+   * - Unknown ids are ignored.
+   */
+  const handleToggleProcessStatus = (processId: string): void => {
     setProcesses((prev) =>
       prev.map((process) => {
         if (process.id !== processId) return process;
@@ -107,7 +228,26 @@ export default function FamilyFmeaClient({
     );
   };
 
-  const handleToggleEquipmentStatus = (processId: string, equipmentId: string) => {
+  /**
+   * What it does:
+   * Cycle the status for a single equipment entry.
+   * Why it exists:
+   * Aligns equipment status changes with process status behavior.
+   *
+   * @param processId - Process id that owns the equipment.
+   * @param equipmentId - Equipment id to update.
+   * @returns Void; updates state.
+   *
+   * @throws None.
+   * @sideEffects Updates component state.
+   *
+   * Edge cases:
+   * - Unknown ids are ignored.
+   */
+  const handleToggleEquipmentStatus = (
+    processId: string,
+    equipmentId: string
+  ): void => {
     setProcesses((prev) =>
       prev.map((process) => {
         if (process.id !== processId) return process;
@@ -128,44 +268,361 @@ export default function FamilyFmeaClient({
     );
   };
 
-  const handleAddProcess = () => {
-    if (!overview) return;
-    const newProcess: Process = {
-      id: createId(),
-      productionLineId: overview.productionLine.id,
-      name: `New process ${processes.length + 1}`,
-      status: "not_started",
-      notes: "Add notes or key actions for this process.",
-      equipment: [
-        { id: createId(), name: "Quality controls", status: "not_started" },
-        { id: createId(), name: "Preventive maintenance", status: "not_started" },
-      ],
-    };
-
-    setProcesses((prev) => [...prev, newProcess]);
-    setSelectedProcessId(newProcess.id);
+  /**
+   * What it does:
+   * Open the create modal for a new process.
+   * Why it exists:
+   * Process creation now requires naming and element details.
+   *
+   * @returns Void; opens the modal.
+   *
+   * @throws None.
+   * @sideEffects Updates component state.
+   *
+   * Edge cases:
+   * - If overview is missing, the modal still opens; submission is guarded.
+   */
+  const handleRequestAddProcess = (): void => {
+    setEditModal(null);
+    setCreateModal({ mode: "process" });
   };
 
-  const handleAddEquipment = (processId: string) => {
+  /**
+   * What it does:
+   * Open the create modal for a new equipment entry.
+   * Why it exists:
+   * Equipment creation now uses the shared modal flow.
+   *
+   * @param processId - Process id that will receive the equipment.
+   * @returns Void; opens the modal.
+   *
+   * @throws None.
+   * @sideEffects Updates component state.
+   */
+  const handleRequestAddEquipment = (processId: string): void => {
+    setEditModal(null);
+    setCreateModal({ mode: "equipment", processId });
+  };
+
+  /**
+   * What it does:
+   * Open the create modal for a family-level element.
+   * Why it exists:
+   * Family elements are created from the main header area.
+   *
+   * @returns Void; opens the modal.
+   *
+   * @throws None.
+   * @sideEffects Updates component state.
+   */
+  const handleRequestAddFamilyElement = (): void => {
+    setEditModal(null);
+    setCreateModal({ mode: "family" });
+  };
+
+  /**
+   * What it does:
+   * Close the create modal without saving.
+   * Why it exists:
+   * Provides a consistent cancel path for creation flows.
+   *
+   * @returns Void; closes the modal.
+   *
+   * @throws None.
+   * @sideEffects Updates component state.
+   */
+  const handleCloseCreateModal = (): void => {
+    setCreateModal(null);
+  };
+
+  /**
+   * What it does:
+   * Open the edit modal for the single family-level element.
+   * Why it exists:
+   * Allows the header element to be edited from its edit icon.
+   *
+   * @returns Void; opens the edit modal when possible.
+   *
+   * @throws None.
+   * @sideEffects Updates component state.
+   *
+   * Edge cases:
+   * - No-op when no family element exists.
+   */
+  const handleRequestEditFamilyElement = (): void => {
+    const element = familyElements[0];
+    if (!element) return;
+    setCreateModal(null);
+    setEditModal({
+      mode: "family",
+      initialValues: {
+        elementName: element.name,
+        details: element.details,
+      },
+    });
+  };
+
+  /**
+   * What it does:
+   * Open the edit modal for a process-attached element.
+   * Why it exists:
+   * Supports editing the element shown inside the process card.
+   *
+   * @param processId - Process id owning the element.
+   * @returns Void; opens the edit modal.
+   *
+   * @throws None.
+   * @sideEffects Updates component state.
+   *
+   * Edge cases:
+   * - No-op when the process or element is missing.
+   */
+  const handleRequestEditProcessElement = (processId: string): void => {
+    const process = processes.find((item) => item.id === processId);
+    const element = process?.element;
+    if (!process || !element) return;
+    setCreateModal(null);
+    setEditModal({
+      mode: "process-element",
+      processId,
+      initialValues: {
+        elementName: element.name,
+        details: element.details,
+      },
+    });
+  };
+
+  /**
+   * What it does:
+   * Open the edit modal for an equipment element.
+   * Why it exists:
+   * Enables per-equipment editing via the element edit icon.
+   *
+   * @param processId - Process id owning the equipment element.
+   * @param elementId - Equipment element id to edit.
+   * @returns Void; opens the edit modal.
+   *
+   * @throws None.
+   * @sideEffects Updates component state.
+   *
+   * Edge cases:
+   * - No-op when the process or equipment element is missing.
+   */
+  const handleRequestEditEquipment = (
+    processId: string,
+    elementId: string
+  ): void => {
+    const process = processes.find((item) => item.id === processId);
+    const element = process?.equipment.find((item) => item.id === elementId);
+    if (!process || !element) return;
+    setCreateModal(null);
+    setEditModal({
+      mode: "equipment",
+      processId,
+      elementId,
+      initialValues: {
+        elementName: element.name,
+        details: element.details,
+      },
+    });
+  };
+
+  /**
+   * What it does:
+   * Close the edit modal without saving.
+   * Why it exists:
+   * Provides a cancel path for editing flows.
+   *
+   * @returns Void; closes the edit modal.
+   *
+   * @throws None.
+   * @sideEffects Updates component state.
+   */
+  const handleCloseEditModal = (): void => {
+    setEditModal(null);
+  };
+
+  /**
+   * What it does:
+   * Create a process or equipment entry from modal payload.
+   * Why it exists:
+   * Centralizes creation logic for reuse across the feature.
+   *
+   * @param payload - Process/element input values from the modal.
+   * @returns Void; updates process state and closes the modal.
+   *
+   * @throws None.
+   * @sideEffects Updates component state.
+   *
+   * Edge cases:
+   * - Ignores submission if overview or modal mode is missing.
+   */
+  const handleCreateSubmit = (payload: CreateItemPayload): void => {
+    if (!overview || !createModal) return;
+
+    const details = normalizeDetails(payload.details);
+
+    if (createModal.mode === "process") {
+      const newProcess: Process = {
+        id: createId(),
+        productionLineId: overview.productionLine.id,
+        name: payload.processName ?? "New process",
+        status: "not_started",
+        // Default notes are used until a dedicated editor is introduced.
+        notes: "Add notes or key actions for this process.",
+        equipment: [],
+        element: {
+          id: createId(),
+          name: payload.elementName,
+          status: "not_started",
+          details,
+        },
+      };
+
+      setProcesses((prev) => [...prev, newProcess]);
+      setSelectedProcessId(newProcess.id);
+      setCreateModal(null);
+      return;
+    }
+
+    if (createModal.mode === "family") {
+      setFamilyElements((prev) => {
+        // Only one family element is allowed; replace existing data if present.
+        if (prev.length > 0) {
+          return [
+            {
+              ...prev[0],
+              name: payload.elementName,
+              details,
+            },
+          ];
+        }
+        return [
+          {
+            id: createId(),
+            name: payload.elementName,
+            details,
+          },
+        ];
+      });
+      setCreateModal(null);
+      return;
+    }
+
     setProcesses((prev) =>
       prev.map((process) => {
-        if (process.id !== processId) return process;
+        if (process.id !== createModal.processId) return process;
         return {
           ...process,
           equipment: [
             ...process.equipment,
             {
               id: createId(),
-              name: `New element ${process.equipment.length + 1}`,
+              name: payload.elementName,
               status: "not_started",
+              details,
             },
           ],
         };
       })
     );
+    setCreateModal(null);
   };
 
-  const handleToggleCriteria = (stepIndex: number, criteriaIndex: number) => {
+  /**
+   * What it does:
+   * Update an existing element from the edit modal payload.
+   * Why it exists:
+   * Keeps edit mutations centralized and consistent with create flows.
+   *
+   * @param payload - Element input values from the modal.
+   * @returns Void; updates element state and closes the modal.
+   *
+   * @throws None.
+   * @sideEffects Updates component state.
+   *
+   * Edge cases:
+   * - No-op when the edit modal is missing or the target cannot be found.
+   */
+  const handleEditSubmit = (payload: CreateItemPayload): void => {
+    if (!editModal) return;
+
+    const details = normalizeDetails(payload.details);
+
+    if (editModal.mode === "family") {
+      setFamilyElements((prev) => {
+        if (prev.length === 0) return prev;
+        return [
+          {
+            ...prev[0],
+            name: payload.elementName,
+            details,
+          },
+        ];
+      });
+      setEditModal(null);
+      return;
+    }
+
+    if (editModal.mode === "process-element") {
+      setProcesses((prev) =>
+        prev.map((process) => {
+          if (process.id !== editModal.processId) return process;
+          if (!process.element) return process;
+          return {
+            ...process,
+            element: {
+              ...process.element,
+              name: payload.elementName,
+              details,
+            },
+          };
+        })
+      );
+      setEditModal(null);
+      return;
+    }
+
+    setProcesses((prev) =>
+      prev.map((process) => {
+        if (process.id !== editModal.processId) return process;
+        return {
+          ...process,
+          equipment: process.equipment.map((item) =>
+            item.id === editModal.elementId
+              ? {
+                  ...item,
+                  name: payload.elementName,
+                  details,
+                }
+              : item
+          ),
+        };
+      })
+    );
+    setEditModal(null);
+  };
+
+  /**
+   * What it does:
+   * Toggle an acceptance criteria checkbox state.
+   * Why it exists:
+   * Tracks progress for guide steps in the overview.
+   *
+   * @param stepIndex - Index of the guide step.
+   * @param criteriaIndex - Index of the criteria within the step.
+   * @returns Void; updates state.
+   *
+   * @throws None.
+   * @sideEffects Updates component state.
+   *
+   * Edge cases:
+   * - Out-of-range indices are ignored.
+   */
+  const handleToggleCriteria = (
+    stepIndex: number,
+    criteriaIndex: number
+  ): void => {
     setCriteriaState((prev) =>
       prev.map((row, rowIndex) =>
         rowIndex !== stepIndex
@@ -194,7 +651,35 @@ export default function FamilyFmeaClient({
       <header className={styles.header}>
         <div>
           <p className={styles.kicker}>Family FMEA</p>
-          <h1 className={styles.title}>{overview.family.name}</h1>
+          <div className={styles.titleRow}>
+            <h1 className={styles.title}>{overview.family.name}</h1>
+            {familyElements.length === 0 ? (
+              <button
+                type="button"
+                className={styles.familyAddElement}
+                onClick={handleRequestAddFamilyElement}
+                aria-label="Add family element"
+                data-testid="family-add-element"
+              >
+                Add element
+              </button>
+            ) : (
+              <div className={styles.familyElementCard} data-testid="family-element">
+                <button
+                  type="button"
+                  className={styles.familyElementEditButton}
+                  aria-label="Edit family element"
+                  title="Edit family element"
+                  onClick={handleRequestEditFamilyElement}
+                >
+                  ✎
+                </button>
+                <span className={styles.familyElementName}>
+                  {familyElements[0]?.name}
+                </span>
+              </div>
+            )}
+          </div>
           <p className={styles.subtitle}>{overview.productionLine.name}</p>
         </div>
       </header>
@@ -207,10 +692,50 @@ export default function FamilyFmeaClient({
           onSelectProcess={setSelectedProcessId}
           onToggleProcessStatus={handleToggleProcessStatus}
           onToggleEquipmentStatus={handleToggleEquipmentStatus}
-          onAddProcess={handleAddProcess}
-          onAddEquipment={handleAddEquipment}
+          onAddProcess={handleRequestAddProcess}
+          onAddEquipment={handleRequestAddEquipment}
+          onEditProcessElement={handleRequestEditProcessElement}
+          onEditEquipment={handleRequestEditEquipment}
         />
       </div>
+
+      <CreateItemModal
+        open={Boolean(createModal)}
+        title={
+          createModal?.mode === "process"
+            ? "Create process"
+            : createModal?.mode === "family"
+            ? "Create family element"
+            : "Create element"
+        }
+        processNameLabel={
+          createModal?.mode === "process" ? "Process name" : undefined
+        }
+        elementNameLabel={
+          createModal?.mode === "process"
+            ? "Process element"
+            : createModal?.mode === "family"
+            ? "Family element"
+            : "Element name"
+        }
+        onClose={handleCloseCreateModal}
+        onSubmit={handleCreateSubmit}
+      />
+
+      <CreateItemModal
+        open={Boolean(editModal)}
+        title="Edit element"
+        elementNameLabel={
+          editModal?.mode === "family"
+            ? "Family element"
+            : editModal?.mode === "process-element"
+            ? "Process element"
+            : "Element name"
+        }
+        initialValues={editModal?.initialValues}
+        onClose={handleCloseEditModal}
+        onSubmit={handleEditSubmit}
+      />
     </div>
   );
 }
