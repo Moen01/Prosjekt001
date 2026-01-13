@@ -1,21 +1,30 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ProcessStatus } from "@lib/types/familyFmea";
 import FiveMPanel from "./five-m-panel";
 
 const labels = ["Man", "Machine"];
 
+const statusLabel: Record<ProcessStatus, string> = {
+  not_started: "Not started",
+  in_progress: "In work",
+  completed: "Completed",
+};
+
 /**
- * Test-only sub-element shape for FiveMPanel fixtures.
+ * Test-only cause card shape for FiveMPanel fixtures.
  */
 interface FiveMTestItem {
   /** Stable id for React keys. */
   id: string;
-  /** Label shown inside the sub-element. */
+  /** Label shown inside the cause card. */
   label: string;
+  /** Status value for the cause card. */
+  status: ProcessStatus;
 }
 
 /**
- * Map from 5M label to its sub-elements.
+ * Map from 5M label to its cause cards.
  */
 type FiveMItemsByLabel = Record<string, FiveMTestItem[]>;
 
@@ -25,7 +34,7 @@ type FiveMItemsByLabel = Record<string, FiveMTestItem[]>;
  * Why it exists:
  * Keep test fixtures compact and focused on rendering behavior.
  *
- * @returns A label-to-items map with one sub-element.
+ * @returns A label-to-items map with one cause card.
  *
  * @throws None.
  * @sideEffects None.
@@ -34,21 +43,26 @@ type FiveMItemsByLabel = Record<string, FiveMTestItem[]>;
  * - Only the first label has items to verify per-column rendering.
  */
 const makeItems = (): FiveMItemsByLabel => ({
-  Man: [{ id: "item-1", label: "Man element 1" }],
+  Man: [{ id: "item-1", label: "Man element 1", status: "not_started" }],
   Machine: [],
 });
 
 describe("FiveMPanel", () => {
-  test("renders buttons and sub-elements with header height styling", async () => {
+  test("renders buttons and cause cards with header height styling", async () => {
     const user = userEvent.setup();
     const onAddItem = jest.fn();
+    const onToggleCauseStatus = jest.fn();
+    const onEditCause = jest.fn();
 
     render(
       <FiveMPanel
         labels={labels}
         items={makeItems()}
         headerHeight={80}
+        statusLabel={statusLabel}
         onAddItem={onAddItem}
+        onToggleCauseStatus={onToggleCauseStatus}
+        onEditCause={onEditCause}
       />
     );
 

@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { createId } from "@lib/utils/id";
 import type { Process, ProcessStatus } from "@lib/types/familyFmea";
 import FiveMPanel from "../five-m-panel/five-m-panel";
-import Element from "./element/element";
+import ProductCharacteristicsCard from "../product-characteristics-card/product-characteristics-card";
 import styles from "./equipment-panel.module.css";
 
 /**
@@ -71,7 +71,7 @@ export default function EquipmentPanel({
   const [headerHeight, setHeaderHeight] = useState(0);
   const [panelOpen, setPanelOpen] = useState(false);
   const [panelItems, setPanelItems] = useState<
-    Record<string, { id: string; label: string }[]>
+    Record<string, { id: string; label: string; status: ProcessStatus }[]>
   >({});
 
   useLayoutEffect(() => {
@@ -150,9 +150,9 @@ export default function EquipmentPanel({
 
   /**
    * What it does:
-   * Append a new sub-element under the requested 5M column.
+   * Append a new cause card under the requested 5M column.
    * Why it exists:
-   * Users need to create sub-elements per 5M category.
+   * Users need to create cause cards per 5M category.
    *
    * @param label - 5M column label to append to.
    * @returns Void; updates local state.
@@ -169,11 +169,63 @@ export default function EquipmentPanel({
       const nextItem = {
         id: createId(),
         label: `${label} element ${itemsForLabel.length + 1}`,
+        status: "not_started" as ProcessStatus,
       };
       return { ...prev, [label]: [...itemsForLabel, nextItem] };
     });
     // Keep the panel open when adding a new item.
     setPanelOpen(true);
+  };
+
+  /**
+   * What it does:
+   * Toggle cause status for the given 5M item.
+   * Why it exists:
+   * Users need to track status of cause cards.
+   *
+   * @param label - 5M column label.
+   * @param causeId - Target cause id for status toggling.
+   * @returns Void; updates local state.
+   *
+   * @throws None.
+   * @sideEffects Updates local component state.
+   *
+   * Edge cases:
+   * - Cycles through not_started -> in_progress -> completed -> not_started.
+   */
+  const toggleCauseStatus = (label: string, causeId: string): void => {
+    setPanelItems((prev) => {
+      const itemsForLabel = prev[label] ?? [];
+      const updatedItems = itemsForLabel.map((item) => {
+        if (item.id !== causeId) return item;
+        const statusCycle: ProcessStatus[] = ["not_started", "in_progress", "completed"];
+        const currentIndex = statusCycle.indexOf(item.status);
+        const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
+        return { ...item, status: nextStatus };
+      });
+      return { ...prev, [label]: updatedItems };
+    });
+  };
+
+  /**
+   * What it does:
+   * Opens the edit flow for the given cause card (placeholder for now).
+   * Why it exists:
+   * Users need to edit cause card details.
+   *
+   * @param label - 5M column label.
+   * @param causeId - Target cause id for editing.
+   * @returns Void; placeholder for future implementation.
+   *
+   * @throws None.
+   * @sideEffects None (placeholder).
+   *
+   * Edge cases:
+   * - Will be implemented with modal in future.
+   */
+  const editCause = (label: string, causeId: string): void => {
+    // TODO: Implement edit modal for cause cards
+    console.log(`Edit cause: ${label} - ${causeId}`);
   };
 
   // data-testid supports panel-selection tests.
@@ -214,7 +266,7 @@ export default function EquipmentPanel({
 
       <div className={styles.equipmentGrid}>
         {process.equipment.map((equipment) => (
-          <Element
+          <ProductCharacteristicsCard
             key={equipment.id}
             name={equipment.name}
             status={equipment.status}
@@ -243,7 +295,10 @@ export default function EquipmentPanel({
           labels={EQUIPMENT_5M_LABELS}
           items={panelItems}
           headerHeight={headerHeight}
+          statusLabel={statusLabel}
           onAddItem={addPanelItem}
+          onToggleCauseStatus={toggleCauseStatus}
+          onEditCause={editCause}
         />
       ) : null}
     </div>

@@ -4,7 +4,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import type { Process, ProcessStatus } from "@lib/types/familyFmea";
 import EquipmentPanel from "../equipment-panel/equipment-panel";
-import Element from "../equipment-panel/element/element";
+import ProcessCharacteristicsCard from "../process-characteristics-card/process-characteristics-card";
 import styles from "./process-board.module.css";
 
 /**
@@ -177,7 +177,7 @@ export default function ProcessBoard({
                   {/* Render the process-attached element inside the process card. */}
                   {process.element ? (
                     <div className={styles.processElement}>
-                      <Element
+                      <ProcessCharacteristicsCard
                         name={process.element.name}
                         status={process.element.status}
                         statusLabel={statusLabel[process.element.status]}

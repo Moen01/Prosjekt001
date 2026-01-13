@@ -1,0 +1,55 @@
+.card {
+  flex: 0 0 auto;
+  min-width: 150px;
+  max-width: 200px;
+  border: 1px solid #1b2a4a;
+  background: #ffffff;
+  padding: 0.6rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+}
+
+.name {
+  font-weight: 600;
+  color: #1b2a4a;
+}
+
+.status {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #4b5875;
+}
+
+.statusnot_started {
+  background: #f4caca;
+  color: #8a2222;
+}
+
+.statusin_progress {
+  background: #f6e4a7;
+  color: #6a4b00;
+}
+
+.statuscompleted {
+  background: #c7e9d1;
+  color: #1f5d33;
+}
+
+.editButton {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.4rem;
+  border: 1px solid rgba(27, 42, 74, 0.2);
+  background: #ffffff;
+  color: #1b2a4a;
+  font-size: 0.65rem;
+  line-height: 1;
+  border-radius: 6px;
+  padding: 0.15rem 0.3rem;
+  cursor: pointer;
+}
