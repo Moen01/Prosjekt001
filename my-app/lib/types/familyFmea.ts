@@ -63,6 +63,16 @@ export interface Process {
   equipment: Equipment[];
   /** Optional element attached directly to the process card. */
   element?: Equipment;
+  /** 5M causes/issues categorized by label (Man, Machine, etc.). */
+  fiveMIssues?: Record<string, FiveMItem[]>;
+}
+
+export interface FiveMItem {
+  id: string;
+  label: string;
+  status: ProcessStatus;
+  details?: string;
+  linkedEquipmentId?: string;
 }
 
 export interface AcceptanceCriteria {

@@ -8,12 +8,14 @@ import type {
   FamilyFmeaOverview,
   Process,
   ProcessStatus,
+  FiveMItem,
 } from "@lib/types/familyFmea";
 import ProcessBoard from "../process-board/process-board";
 import CreateItemModal, {
   type CreateItemInitialValues,
   type CreateItemPayload,
 } from "../create-item-modal/create-item-modal";
+import FiveMDetailModal from "../five-m-detail-modal/five-m-detail-modal";
 import styles from "./family-fmea.module.css";
 
 interface FamilyFmeaClientProps {
@@ -94,6 +96,15 @@ type EditModalState =
   | { mode: "equipment"; processId: string; elementId: string; initialValues: CreateItemInitialValues }
   | { mode: "process-element"; processId: string; initialValues: CreateItemInitialValues };
 
+interface FiveMEditState {
+  processId: string;
+  label: string;
+  issueId: string;
+  currentDetails: string;
+  currentLinkedId?: string;
+  availableEquipment?: { id: string; name: string }[];
+}
+
 /**
  * Family-level element created from the header panel.
  */
@@ -138,6 +149,9 @@ export default function FamilyFmeaClient({
   const [criteriaState, setCriteriaState] = useState<boolean[][]>([]);
   const [createModal, setCreateModal] = useState<CreateModalState | null>(null);
   const [editModal, setEditModal] = useState<EditModalState | null>(null);
+  const [fiveMEditModal, setFiveMEditModal] = useState<FiveMEditState | null>(
+    null
+  );
   const [familyElements, setFamilyElements] = useState<FamilyElement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -221,8 +235,8 @@ export default function FamilyFmeaClient({
           process.status === "not_started"
             ? "in_progress"
             : process.status === "in_progress"
-            ? "completed"
-            : "not_started";
+              ? "completed"
+              : "not_started";
         return { ...process, status: nextStatus };
       })
     );
@@ -259,8 +273,8 @@ export default function FamilyFmeaClient({
               item.status === "not_started"
                 ? "in_progress"
                 : item.status === "in_progress"
-                ? "completed"
-                : "not_started";
+                  ? "completed"
+                  : "not_started";
             return { ...item, status: nextStatus };
           }),
         };
@@ -302,6 +316,116 @@ export default function FamilyFmeaClient({
   const handleRequestAddEquipment = (processId: string): void => {
     setEditModal(null);
     setCreateModal({ mode: "equipment", processId });
+  };
+
+  /**
+   * Adds a new 5M issue to the specified process under the given label (Man/Machine/etc.).
+   */
+  const handleAddFiveMIssue = (processId: string, label: string): void => {
+    setProcesses((prev) =>
+      prev.map((process) => {
+        if (process.id !== processId) return process;
+        const currentIssues = process.fiveMIssues?.[label] ?? [];
+        const newItem: FiveMItem = {
+          id: createId(),
+          label: `${label} element ${currentIssues.length + 1}`,
+          status: "not_started",
+        };
+        return {
+          ...process,
+          fiveMIssues: {
+            ...process.fiveMIssues,
+            [label]: [...currentIssues, newItem],
+          },
+        };
+      })
+    );
+  };
+
+  /**
+   * Toggles the status of a 5M issue.
+   */
+  const handleToggleFiveMStatus = (
+    processId: string,
+    label: string,
+    issueId: string
+  ): void => {
+    setProcesses((prev) =>
+      prev.map((process) => {
+        if (process.id !== processId) return process;
+        const currentIssues = process.fiveMIssues?.[label] ?? [];
+        return {
+          ...process,
+          fiveMIssues: {
+            ...process.fiveMIssues,
+            [label]: currentIssues.map((item) => {
+              if (item.id !== issueId) return item;
+              const statusCycle: ProcessStatus[] = [
+                "not_started",
+                "in_progress",
+                "completed",
+              ];
+              const currentIndex = statusCycle.indexOf(item.status);
+              const nextStatus =
+                statusCycle[(currentIndex + 1) % statusCycle.length];
+              return { ...item, status: nextStatus };
+            }),
+          },
+        };
+      })
+    );
+  };
+
+  const handleEditFiveMIssue = (
+    processId: string,
+    label: string,
+    issueId: string
+  ): void => {
+    const process = processes.find((p) => p.id === processId);
+    const item = process?.fiveMIssues?.[label]?.find((i) => i.id === issueId);
+    if (!process || !item) return;
+
+    setFiveMEditModal({
+      processId,
+      label,
+      issueId,
+      currentDetails: item.details ?? "",
+      currentLinkedId: item.linkedEquipmentId,
+      availableEquipment: process.equipment.map((e) => ({
+        id: e.id,
+        name: e.name,
+      })),
+    });
+  };
+
+  const handleFiveMSubmit = (
+    details: string,
+    linkedEquipmentId?: string
+  ): void => {
+    if (!fiveMEditModal) return;
+    const { processId, label, issueId } = fiveMEditModal;
+
+    setProcesses((prev) =>
+      prev.map((process) => {
+        if (process.id !== processId) return process;
+        const currentIssues = process.fiveMIssues?.[label] ?? [];
+        return {
+          ...process,
+          fiveMIssues: {
+            ...process.fiveMIssues,
+            [label]: currentIssues.map((item) => {
+              if (item.id !== issueId) return item;
+              return {
+                ...item,
+                details,
+                linkedEquipmentId,
+              };
+            }),
+          },
+        };
+      })
+    );
+    setFiveMEditModal(null);
   };
 
   /**
@@ -591,10 +715,10 @@ export default function FamilyFmeaClient({
           equipment: process.equipment.map((item) =>
             item.id === editModal.elementId
               ? {
-                  ...item,
-                  name: payload.elementName,
-                  details,
-                }
+                ...item,
+                name: payload.elementName,
+                details,
+              }
               : item
           ),
         };
@@ -628,8 +752,8 @@ export default function FamilyFmeaClient({
         rowIndex !== stepIndex
           ? row
           : row.map((value, valueIndex) =>
-              valueIndex === criteriaIndex ? !value : value
-            )
+            valueIndex === criteriaIndex ? !value : value
+          )
       )
     );
   };
@@ -696,6 +820,9 @@ export default function FamilyFmeaClient({
           onAddEquipment={handleRequestAddEquipment}
           onEditProcessElement={handleRequestEditProcessElement}
           onEditEquipment={handleRequestEditEquipment}
+          onAddFiveMIssue={handleAddFiveMIssue}
+          onToggleFiveMStatus={handleToggleFiveMStatus}
+          onEditFiveMIssue={handleEditFiveMIssue}
         />
       </div>
 
@@ -705,8 +832,8 @@ export default function FamilyFmeaClient({
           createModal?.mode === "process"
             ? "Create process"
             : createModal?.mode === "family"
-            ? "Create family element"
-            : "Create element"
+              ? "Create family element"
+              : "Create element"
         }
         processNameLabel={
           createModal?.mode === "process" ? "Process name" : undefined
@@ -715,8 +842,8 @@ export default function FamilyFmeaClient({
           createModal?.mode === "process"
             ? "Process element"
             : createModal?.mode === "family"
-            ? "Family element"
-            : "Element name"
+              ? "Family element"
+              : "Element name"
         }
         onClose={handleCloseCreateModal}
         onSubmit={handleCreateSubmit}
@@ -729,13 +856,25 @@ export default function FamilyFmeaClient({
           editModal?.mode === "family"
             ? "Family element"
             : editModal?.mode === "process-element"
-            ? "Process element"
-            : "Element name"
+              ? "Process element"
+              : "Element name"
         }
         initialValues={editModal?.initialValues}
         onClose={handleCloseEditModal}
         onSubmit={handleEditSubmit}
       />
+
+      {fiveMEditModal && (
+        <FiveMDetailModal
+          open={Boolean(fiveMEditModal)}
+          itemLabel={fiveMEditModal.label}
+          initialDetails={fiveMEditModal.currentDetails}
+          initialLinkedEquipmentId={fiveMEditModal.currentLinkedId}
+          availableEquipment={fiveMEditModal.availableEquipment ?? []}
+          onClose={() => setFiveMEditModal(null)}
+          onSubmit={handleFiveMSubmit}
+        />
+      )}
     </div>
   );
 }

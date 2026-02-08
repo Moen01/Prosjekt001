@@ -31,6 +31,17 @@ interface ProcessBoardProps {
   onEditProcessElement: (processId: string) => void;
   /** Opens the edit flow for an equipment element. */
   onEditEquipment: (processId: string, equipmentId: string) => void;
+  onAddFiveMIssue: (processId: string, label: string) => void;
+  onToggleFiveMStatus: (
+    processId: string,
+    label: string,
+    issueId: string
+  ) => void;
+  onEditFiveMIssue: (
+    processId: string,
+    label: string,
+    issueId: string
+  ) => void;
 }
 
 const statusLabel: Record<ProcessStatus, string> = {
@@ -72,6 +83,9 @@ export default function ProcessBoard({
   onAddEquipment,
   onEditProcessElement,
   onEditEquipment,
+  onAddFiveMIssue,
+  onToggleFiveMStatus,
+  onEditFiveMIssue,
 }: ProcessBoardProps) {
   const cardRefs = useRef(new Map<string, HTMLDivElement | null>());
   const [processHeights, setProcessHeights] = useState<Record<string, number>>(
@@ -156,21 +170,9 @@ export default function ProcessBoard({
                   role="button"
                   tabIndex={0}
                   onClick={() => onSelectProcess(process.id)}
-                  onContextMenu={(event) => {
-                    event.preventDefault();
-                    onToggleProcessStatus(process.id);
-                  }}
                 >
                   <div className={styles.processTitleRow}>
                     <span className={styles.processName}>{process.name}</span>
-                    <span
-                      className={clsx(
-                        styles.processStatus,
-                        styles[`status${process.status}`]
-                      )}
-                    >
-                      {statusLabel[process.status]}
-                    </span>
                   </div>
                   <p className={styles.processNotes}>{process.notes}</p>
 
@@ -199,6 +201,9 @@ export default function ProcessBoard({
                 onSelectProcess={onSelectProcess}
                 onToggleEquipmentStatus={onToggleEquipmentStatus}
                 onEditEquipment={onEditEquipment}
+                onAddFiveMIssue={onAddFiveMIssue}
+                onToggleFiveMStatus={onToggleFiveMStatus}
+                onEditFiveMIssue={onEditFiveMIssue}
               />
             </div>
           );

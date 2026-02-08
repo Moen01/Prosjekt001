@@ -13,6 +13,7 @@ interface FiveMPanelItem {
   label: string;
   /** Status value for visual state styling. */
   status: ProcessStatus;
+  linkedEquipmentId?: string;
 }
 
 /**
@@ -32,7 +33,10 @@ interface FiveMPanelProps {
   /** Toggles status for the given cause item. */
   onToggleCauseStatus: (label: string, causeId: string) => void;
   /** Opens the edit flow for the given cause item. */
+  /** Click handler for opening the edit flow. */
   onEditCause: (label: string, causeId: string) => void;
+  /** ID of the currently highlighted equipment (from right-click). */
+  highlightedEquipmentId?: string;
 }
 
 /**
@@ -46,6 +50,7 @@ interface FiveMPanelProps {
  * - onAddItem: handler for spawning new cause cards.
  * - onToggleCauseStatus: callback for status toggles.
  * - onEditCause: callback for editing cause entries.
+ * - highlightedEquipmentId: used to highlight linked cards.
  * State:
  * - none.
  * Side effects:
@@ -64,6 +69,7 @@ export default function FiveMPanel({
   onAddItem,
   onToggleCauseStatus,
   onEditCause,
+  highlightedEquipmentId,
 }: FiveMPanelProps) {
   // data-testid supports panel layout tests.
   return (
@@ -93,8 +99,12 @@ export default function FiveMPanel({
                   name={item.label}
                   status={item.status}
                   statusLabel={statusLabel[item.status]}
-                  onClick={() => onToggleCauseStatus(label, item.id)}
+                  onClick={() => onEditCause(label, item.id)}
                   onEdit={() => onEditCause(label, item.id)}
+                  isHighlighted={
+                    !!highlightedEquipmentId &&
+                    item.linkedEquipmentId === highlightedEquipmentId
+                  }
                 />
               ))}
             </div>

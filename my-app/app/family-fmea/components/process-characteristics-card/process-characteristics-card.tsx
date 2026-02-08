@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import type { MouseEvent } from "react";
 import type { ProcessStatus } from "@lib/types/familyFmea";
 import styles from "./process-characteristics-card.module.css";
@@ -47,7 +46,7 @@ export default function ProcessCharacteristicsCard({
 }: ProcessCharacteristicsCardProps) {
   return (
     <div
-      className={clsx(styles.card, styles[`status${status}`])}
+      className={styles.card}
       role="button"
       tabIndex={0}
       onClick={onClick}
@@ -66,7 +65,6 @@ export default function ProcessCharacteristicsCard({
         ✎
       </button>
       <span className={styles.name}>{name}</span>
-      <span className={styles.status}>{statusLabel}</span>
     </div>
   );
 }

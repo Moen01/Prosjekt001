@@ -54,7 +54,8 @@
   margin-top: 1rem;
   width: 40%;
   justify-content: center;
-  grid-column: 1; /* ADDED: Keep button in first column only */
+  grid-column: 1;
+  /* ADDED: Keep button in first column only */
 }
 
 .addProcess:hover {
@@ -89,7 +90,7 @@
 }
 
 .processCard {
-  background: #ffffff;
+  background: #f9fafb;
   border: 1px solid #1b2a4a;
   /* Increase vertical padding to add ~10px height. */
   padding: calc(0.75rem + 5px) 0.9rem;
@@ -115,29 +116,7 @@
   color: #121a2c;
 }
 
-.processStatus {
-  font-size: 0.7rem;
-  padding: 0.15rem 0.45rem;
-  border-radius: 999px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
 
-.statusnot_started {
-  background: #f4caca;
-  color: #8a2222;
-  font-size: 0,4rem;
-}
-
-.statusin_progress {
-  background: #f6e4a7;
-  color: #6a4b00;
-}
-
-.statuscompleted {
-  background: #c7e9d1;
-  color: #1f5d33;
-}
 
 .processNotes {
   margin: 0.4rem 0 0;

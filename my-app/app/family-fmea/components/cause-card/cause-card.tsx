@@ -17,6 +17,8 @@ interface CauseCardProps {
   onClick: (event: MouseEvent<HTMLDivElement>) => void;
   /** Click handler for opening the edit flow. */
   onEdit: (event: MouseEvent<HTMLButtonElement>) => void;
+  /** Whether the card is highlighted (e.g. linked to selected equipment). */
+  isHighlighted?: boolean;
 }
 
 /**
@@ -28,6 +30,7 @@ interface CauseCardProps {
  * - statusLabel: label text shown under the name.
  * - onClick: handler for selection or status toggle.
  * - onEdit: handler for edit icon clicks.
+ * - isHighlighted: whether to apply highlight styling.
  * State:
  * - none.
  * Side effects:
@@ -44,10 +47,13 @@ export default function CauseCard({
   statusLabel,
   onClick,
   onEdit,
+  isHighlighted,
 }: CauseCardProps) {
   return (
     <div
-      className={clsx(styles.card, styles[`status${status}`])}
+      className={clsx(styles.card, {
+        [styles.highlighted]: isHighlighted,
+      })}
       role="button"
       tabIndex={0}
       onClick={onClick}
@@ -66,7 +72,6 @@ export default function CauseCard({
         ✎
       </button>
       <span className={styles.name}>{name}</span>
-      <span className={styles.status}>{statusLabel}</span>
     </div>
   );
 }

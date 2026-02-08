@@ -25,19 +25,9 @@
   color: #4b5875;
 }
 
-.statusnot_started {
-  background: #f4caca;
-  color: #8a2222;
-}
-
-.statusin_progress {
-  background: #f6e4a7;
-  color: #6a4b00;
-}
-
-.statuscompleted {
-  background: #c7e9d1;
-  color: #1f5d33;
+.highlighted {
+  border: 2px solid #5a9bd6;
+  background-color: #e6f7ff;
 }
 
 .editButton {

@@ -16,7 +16,12 @@ interface ProductCharacteristicsCardProps {
   /** Click handler for selecting or toggling the card. */
   onClick: (event: MouseEvent<HTMLDivElement>) => void;
   /** Click handler for opening the edit flow. */
+  /** Click handler for opening the edit flow. */
   onEdit: (event: MouseEvent<HTMLButtonElement>) => void;
+  /** Context menu handler for highlighting linked items. */
+  onContextMenu?: (event: MouseEvent<HTMLDivElement>) => void;
+  /** Whether the card is selected for 5M highlighting. */
+  isHighlighted?: boolean;
 }
 
 /**
@@ -44,13 +49,18 @@ export default function ProductCharacteristicsCard({
   statusLabel,
   onClick,
   onEdit,
+  onContextMenu,
+  isHighlighted,
 }: ProductCharacteristicsCardProps) {
   return (
     <div
-      className={clsx(styles.card, styles[`status${status}`])}
+      className={clsx(styles.card, {
+        [styles.highlighted]: isHighlighted,
+      })}
       role="button"
       tabIndex={0}
       onClick={onClick}
+      onContextMenu={onContextMenu}
     >
       <button
         type="button"
@@ -66,7 +76,6 @@ export default function ProductCharacteristicsCard({
         ✎
       </button>
       <span className={styles.name}>{name}</span>
-      <span className={styles.status}>{statusLabel}</span>
     </div>
   );
 }

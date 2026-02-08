@@ -33,6 +33,17 @@ const processesByLine: Record<string, Process[]> = {
         { id: "equip-safety", name: "Safety interlocks", status: "in_progress" },
         { id: "equip-qa", name: "Quality sampling", status: "not_started" },
       ],
+      fiveMIssues: {
+        Man: [
+          {
+            id: "issue-1",
+            label: "Operator Training",
+            status: "in_progress",
+            details: "Need certification for furnace operation.",
+            linkedEquipmentId: "equip-temp",
+          },
+        ],
+      },
     },
     {
       id: "proc-cast",

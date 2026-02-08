@@ -28,6 +28,17 @@ interface EquipmentPanelProps {
   onToggleEquipmentStatus: (processId: string, equipmentId: string) => void;
   /** Opens the edit flow for the given equipment entry. */
   onEditEquipment: (processId: string, equipmentId: string) => void;
+  onAddFiveMIssue: (processId: string, label: string) => void;
+  onToggleFiveMStatus: (
+    processId: string,
+    label: string,
+    issueId: string
+  ) => void;
+  onEditFiveMIssue: (
+    processId: string,
+    label: string,
+    issueId: string
+  ) => void;
 }
 
 // 5M labels for the equipment-panel dropdown.
@@ -66,13 +77,16 @@ export default function EquipmentPanel({
   onSelectProcess,
   onToggleEquipmentStatus,
   onEditEquipment,
+  onAddFiveMIssue,
+  onToggleFiveMStatus,
+  onEditFiveMIssue,
 }: EquipmentPanelProps) {
   const headerRef = useRef<HTMLDivElement | null>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
   const [panelOpen, setPanelOpen] = useState(false);
-  const [panelItems, setPanelItems] = useState<
-    Record<string, { id: string; label: string; status: ProcessStatus }[]>
-  >({});
+  const [highlightedEquipmentId, setHighlightedEquipmentId] = useState<
+    string | undefined
+  >(undefined);
 
   useLayoutEffect(() => {
     const element = headerRef.current;
@@ -164,15 +178,7 @@ export default function EquipmentPanel({
    * - Initializes the column array on first insert.
    */
   const addPanelItem = (label: string): void => {
-    setPanelItems((prev) => {
-      const itemsForLabel = prev[label] ?? [];
-      const nextItem = {
-        id: createId(),
-        label: `${label} element ${itemsForLabel.length + 1}`,
-        status: "not_started" as ProcessStatus,
-      };
-      return { ...prev, [label]: [...itemsForLabel, nextItem] };
-    });
+    onAddFiveMIssue(process.id, label);
     // Keep the panel open when adding a new item.
     setPanelOpen(true);
   };
@@ -194,17 +200,7 @@ export default function EquipmentPanel({
    * - Cycles through not_started -> in_progress -> completed -> not_started.
    */
   const toggleCauseStatus = (label: string, causeId: string): void => {
-    setPanelItems((prev) => {
-      const itemsForLabel = prev[label] ?? [];
-      const updatedItems = itemsForLabel.map((item) => {
-        if (item.id !== causeId) return item;
-        const statusCycle: ProcessStatus[] = ["not_started", "in_progress", "completed"];
-        const currentIndex = statusCycle.indexOf(item.status);
-        const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
-        return { ...item, status: nextStatus };
-      });
-      return { ...prev, [label]: updatedItems };
-    });
+    onToggleFiveMStatus(process.id, label, causeId);
   };
 
   /**
@@ -224,8 +220,7 @@ export default function EquipmentPanel({
    * - Will be implemented with modal in future.
    */
   const editCause = (label: string, causeId: string): void => {
-    // TODO: Implement edit modal for cause cards
-    console.log(`Edit cause: ${label} - ${causeId}`);
+    onEditFiveMIssue(process.id, label, causeId);
   };
 
   // data-testid supports panel-selection tests.
@@ -244,6 +239,9 @@ export default function EquipmentPanel({
         // Allow activating the process by clicking the faded panel background.
         if (!isSelected) {
           onSelectProcess(process.id);
+        } else {
+          // Clear highlight on background click
+          setHighlightedEquipmentId(undefined);
         }
       }}
     >
@@ -256,7 +254,10 @@ export default function EquipmentPanel({
         <button
           type="button"
           className={styles.addEquipment}
-          onClick={() => onAddEquipment(process.id)}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent clearing highlight
+            onAddEquipment(process.id);
+          }}
           disabled={!isSelected}
           data-testid={`equipment-add-element-${process.id}`}
         >
@@ -276,7 +277,19 @@ export default function EquipmentPanel({
               event.stopPropagation();
               handleEquipmentClick(equipment.id);
             }}
-            onEdit={() => onEditEquipment(process.id, equipment.id)}
+            onEdit={(e) => {
+              e.stopPropagation();
+              onEditEquipment(process.id, equipment.id);
+            }}
+            onContextMenu={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              if (!isSelected) return;
+              setHighlightedEquipmentId((prev) =>
+                prev === equipment.id ? undefined : equipment.id
+              );
+            }}
+            isHighlighted={highlightedEquipmentId === equipment.id}
           />
         ))}
       </div>
@@ -284,7 +297,10 @@ export default function EquipmentPanel({
       <button
         type="button"
         className={styles.equipment5mToggle}
-        onClick={togglePanel}
+        onClick={(e) => {
+          e.stopPropagation();
+          togglePanel();
+        }}
         disabled={!isSelected}
       >
         5M
@@ -293,12 +309,13 @@ export default function EquipmentPanel({
       {panelOpen ? (
         <FiveMPanel
           labels={EQUIPMENT_5M_LABELS}
-          items={panelItems}
+          items={process.fiveMIssues ?? {}}
           headerHeight={headerHeight}
           statusLabel={statusLabel}
           onAddItem={addPanelItem}
           onToggleCauseStatus={toggleCauseStatus}
           onEditCause={editCause}
+          highlightedEquipmentId={highlightedEquipmentId}
         />
       ) : null}
     </div>
