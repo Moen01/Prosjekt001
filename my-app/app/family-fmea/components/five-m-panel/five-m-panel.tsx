@@ -13,7 +13,7 @@ interface FiveMPanelItem {
   label: string;
   /** Status value for visual state styling. */
   status: ProcessStatus;
-  linkedEquipmentId?: string;
+  linkedEquipmentIds?: string[];
 }
 
 /**
@@ -103,7 +103,7 @@ export default function FiveMPanel({
                   onEdit={() => onEditCause(label, item.id)}
                   isHighlighted={
                     !!highlightedEquipmentId &&
-                    item.linkedEquipmentId === highlightedEquipmentId
+                    item.linkedEquipmentIds?.includes(highlightedEquipmentId)
                   }
                 />
               ))}

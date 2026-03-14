@@ -101,7 +101,7 @@ interface FiveMEditState {
   label: string;
   issueId: string;
   currentDetails: string;
-  currentLinkedId?: string;
+  currentLinkedIds?: string[];
   availableEquipment?: { id: string; name: string }[];
 }
 
@@ -390,7 +390,7 @@ export default function FamilyFmeaClient({
       label,
       issueId,
       currentDetails: item.details ?? "",
-      currentLinkedId: item.linkedEquipmentId,
+      currentLinkedIds: item.linkedEquipmentIds ?? [],
       availableEquipment: process.equipment.map((e) => ({
         id: e.id,
         name: e.name,
@@ -400,7 +400,7 @@ export default function FamilyFmeaClient({
 
   const handleFiveMSubmit = (
     details: string,
-    linkedEquipmentId?: string
+    linkedEquipmentIds?: string[]
   ): void => {
     if (!fiveMEditModal) return;
     const { processId, label, issueId } = fiveMEditModal;
@@ -418,7 +418,7 @@ export default function FamilyFmeaClient({
               return {
                 ...item,
                 details,
-                linkedEquipmentId,
+                linkedEquipmentIds,
               };
             }),
           },
@@ -869,7 +869,7 @@ export default function FamilyFmeaClient({
           open={Boolean(fiveMEditModal)}
           itemLabel={fiveMEditModal.label}
           initialDetails={fiveMEditModal.currentDetails}
-          initialLinkedEquipmentId={fiveMEditModal.currentLinkedId}
+          initialLinkedEquipmentIds={fiveMEditModal.currentLinkedIds ?? []}
           availableEquipment={fiveMEditModal.availableEquipment ?? []}
           onClose={() => setFiveMEditModal(null)}
           onSubmit={handleFiveMSubmit}

@@ -72,7 +72,7 @@ export interface FiveMItem {
   label: string;
   status: ProcessStatus;
   details?: string;
-  linkedEquipmentId?: string;
+  linkedEquipmentIds?: string[];
 }
 
 export interface AcceptanceCriteria {

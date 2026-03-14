@@ -5,32 +5,32 @@ interface FiveMDetailModalProps {
     open: boolean;
     itemLabel: string;
     initialDetails: string;
-    initialLinkedEquipmentId?: string;
+    initialLinkedEquipmentIds: string[];
     availableEquipment: { id: string; name: string }[];
     onClose: () => void;
-    onSubmit: (details: string, linkedEquipmentId?: string) => void;
+    onSubmit: (details: string, linkedEquipmentIds: string[]) => void;
 }
 
 export default function FiveMDetailModal({
     open,
     itemLabel,
     initialDetails,
-    initialLinkedEquipmentId,
+    initialLinkedEquipmentIds,
     availableEquipment,
     onClose,
     onSubmit,
 }: FiveMDetailModalProps) {
     const [details, setDetails] = useState(initialDetails);
-    const [linkedEquipmentId, setLinkedEquipmentId] = useState<string | undefined>(
-        initialLinkedEquipmentId
+    const [linkedEquipmentIds, setLinkedEquipmentIds] = useState<string[]>(
+        initialLinkedEquipmentIds
     );
 
     useEffect(() => {
         if (open) {
             setDetails(initialDetails);
-            setLinkedEquipmentId(initialLinkedEquipmentId);
+            setLinkedEquipmentIds(initialLinkedEquipmentIds);
         }
-    }, [open, initialDetails, initialLinkedEquipmentId]);
+    }, [open, initialDetails, initialLinkedEquipmentIds]);
 
     if (!open) return null;
 
@@ -60,20 +60,26 @@ export default function FiveMDetailModal({
                         <div className={styles.linkSection}>
                             <label className={styles.selectLabel}>
                                 Link to Equipment:
-                                <select
-                                    className={styles.select}
-                                    value={linkedEquipmentId || ""}
-                                    onChange={(e) =>
-                                        setLinkedEquipmentId(e.target.value || undefined)
-                                    }
-                                >
-                                    <option value="">-- No Link --</option>
+                                <div className={styles.checkboxList}>
                                     {availableEquipment.map((eq) => (
-                                        <option key={eq.id} value={eq.id}>
+                                        <label key={eq.id} className={styles.checkboxLabel}>
+                                            <input
+                                                type="checkbox"
+                                                checked={linkedEquipmentIds.includes(eq.id)}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setLinkedEquipmentIds((prev) => [...prev, eq.id]);
+                                                    } else {
+                                                        setLinkedEquipmentIds((prev) =>
+                                                            prev.filter((id) => id !== eq.id)
+                                                        );
+                                                    }
+                                                }}
+                                            />
                                             {eq.name}
-                                        </option>
+                                        </label>
                                     ))}
-                                </select>
+                                </div>
                             </label>
                         </div>
                     ) : (
@@ -91,7 +97,7 @@ export default function FiveMDetailModal({
                         type="button"
                         className={styles.submit}
                         onClick={() =>
-                            onSubmit(details, linkedEquipmentId)
+                            onSubmit(details, linkedEquipmentIds)
                         }
                     >
                         Save
